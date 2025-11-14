@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Path Tutor — Discrete Logic (Multiple Choice)</title>
+<style>
+  :root{
+    --blue:#3b82f6;   /* group */
+    --purple:#a855f7; /* atom */
+    --yellow:#eab308; /* simplify / negation */
+    --green:#22c55e;  /* combine */
+    --orange:#f97316; /* finish */
+    --paper:#f7f3e8;  /* soft background */
+    --ink:#1f2937;
+    --card:#ffffff;
+    --line:#e5e7eb;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; padding:24px;
+    background:var(--paper); color:var(--ink);
+    font:16px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  }
+  h1{margin:0 0 8px 0; font-size:20px}
+  p{margin:8px 0}
+  .wrap{display:grid; grid-template-columns:200px 1fr; gap:16px; max-width:980px; margin:auto}
+  .rail{position:sticky; top:16px; display:flex; flex-direction:column; gap:10px}
+  .swatch{
+    display:flex; align-items:center; gap:10px;
+    background:var(--card); border:1px solid var(--line); border-radius:12px;
+    padding:12px; cursor:pointer; user-select:none
+  }
+  .swatch .dot{width:16px; height:16px; border-radius:50%}
+  .blue{color:var(--blue)} .purple{color:var(--purple)} .yellow{color:var(--yellow)}
+  .green{color:var(--green)} .orange{color:var(--orange)}
+  .blue .dot{background:var(--blue)} .purple .dot{background:var(--purple)}
+  .yellow .dot{background:var(--yellow)} .green .dot{background:var(--green)}
+  .orange .dot{background:var(--orange)}
+  .active{outline:3px solid currentColor}
+  .card{
+    background:var(--card); border:1px solid var(--line); border-radius:16px;
+    padding:16px; margin-bottom:16px
+  }
+  .problemHead{display:flex; align-items:center; justify-content:space-between; gap:12px}
+  .formula{font-size:20px; letter-spacing:.2px}
+  .bar{height:8px; background:#eee; border-radius:999px; overflow:hidden; min-width:200px}
+  .bar span{display:block; height:100%; width:0;
+    background:linear-gradient(90deg, var(--blue), var(--purple), var(--yellow), var(--green), var(--orange));
+    transition:width .3s}
+  .targets{display:flex; flex-wrap:wrap; gap:8px; margin-top:12px}
+  .tbtn{
+    padding:10px 14px; border-radius:12px; background:#f9fafb; border:1px solid var(--line);
+    cursor:pointer; transition:transform .05s; font-size:14px
+  }
+  .tbtn:active{transform:scale(.98)}
+  .tbtn[disabled]{opacity:.55; cursor:not-allowed}
+  .ghost{animation:ghostPulse 1s infinite}
+  @keyframes ghostPulse{
+    0%{box-shadow:0 0 0 0 rgba(0,0,0,0.00)}
+    50%{box-shadow:0 0 0 5px rgba(0,0,0,0.06)}
+    100%{box-shadow:0 0 0 0 rgba(0,0,0,0.00)}
+  }
+  .log{font-size:14px; white-space:pre-wrap; margin-top:8px}
+  .bad{color:#b91c1c} .good{color:#065f46}
+  .sep{height:1px; background:var(--line); margin:12px 0}
+  /* MC panel */
+  .mc{
+    margin-top:12px; background:#fff; border:1px solid var(--line); border-radius:14px; padding:12px
+  }
+  .mc h3{margin:0 0 8px 0; font-size:16px}
+  .choices{display:flex; flex-wrap:wrap; gap:8px}
+  .choice{
+    padding:10px 12px; border:1px solid var(--line); border-radius:12px;
+    background:#f8fafc; cursor:pointer; font-size:14px
+  }
+  .choice.correct{border-color:#16a34a}
+  .choice.wrong{border-color:#dc2626}
+  .pill{display:inline-block; padding:2px 8px; border-radius:999px; font-size:12px; margin-left:8px}
+  .pill.blue{background:rgba(59,130,246,.15); color:var(--blue)}
+  .pill.purple{background:rgba(168,85,247,.15); color:var(--purple)}
+  .pill.yellow{background:rgba(234,179,8,.15); color:var(--yellow)}
+  .pill.green{background:rgba(34,197,94,.15); color:var(--green)}
+  .pill.orange{background:rgba(249,115,22,.15); color:var(--orange)}
+</style>
+</head>
+<body>
+  <h1>Path Tutor — Discrete Logic (Multiple Choice, Single Problem)</h1>
+  <p>Pick a color, click the next part of the formula, then answer the multiple-choice for that step. If you pick out of order, a ghost hint will nudge you.</p>
+
+  <div class="wrap">
+    <!-- COLOR RAIL -->
+    <div class="rail" id="rail">
+      <div class="swatch blue"   data-color="BLUE"><div class="dot"></div>🟦 Group <span class="pill blue">scope</span></div>
+      <div class="swatch purple" data-color="PURPLE"><div class="dot"></div>🟪 Atom <span class="pill purple">P, Q…</span></div>
+      <div class="swatch yellow" data-color="YELLOW"><div class="dot"></div>🟨 Simplify <span class="pill yellow">¬, identities</span></div>
+      <div class="swatch green"  data-color="GREEN"><div class="dot"></div>🟩 Combine <span class="pill green">∧ ∨ →</span></div>
+      <div class="swatch orange" data-color="ORANGE"><div class="dot"></div>🟧 Finish <span class="pill orange">verdict</span></div>
+    </div>
+
+    <!-- PROBLEM -->
+    <div id="problemHost" class="card"></div>
+  </div>
+
+<script>
+/* ========== Color + Problem spec (single problem) ========== */
+const BLUE="BLUE", PURPLE="PURPLE", YELLOW="YELLOW", GREEN="GREEN", ORANGE="ORANGE";
+
+const problem = {
+  id:"P1",
+  title:"De Morgan implication (with assignments)",
+  formula:"¬(P ∧ Q) → (¬P ∨ ¬Q)",
+  assignment:"P = T, Q = F",
+  targets:[
+    {id:"scopeLeft",  label:"scope: ¬(P ∧ Q)"},
+    {id:"scopeRight", label:"scope: (¬P ∨ ¬Q)"},
+    {id:"atomP",      label:"atom: P"},
+    {id:"atomQ",      label:"atom: Q"},
+    {id:"simpAnd",    label:"simplify: (P ∧ Q)"},
+    {id:"simpNotL",   label:"simplify: ¬( … )"},
+    {id:"simpNotP",   label:"simplify: ¬P"},
+    {id:"simpNotQ",   label:"simplify: ¬Q"},
+    {id:"combineRight", label:"combine: (¬P ∨ ¬Q)"},
+    {id:"combineImpl",  label:"combine: →"},
+    {id:"finish",     label:"finish"}
+  ],
+  // Steps define: expected (color, target) + the MC question for that step
+  steps:[
+    { color:BLUE,   target:"scopeLeft",
+      question:"Mark the left scope.",
+      choices:["Continue"], correct:0, explain:"We’ll solve inside the left group.", skipMC:true
+    },
+    { color:BLUE,   target:"scopeRight",
+      question:"Mark the right scope.",
+      choices:["Continue"], correct:0, explain:"We’ll solve inside the right group after atoms.", skipMC:true
+    },
+    { color:PURPLE, target:"atomP",
+      question:"What is P?",
+      choices:["True","False"], correct:0, explain:"Assignment says P = True."
+    },
+    { color:PURPLE, target:"atomQ",
+      question:"What is Q?",
+      choices:["True","False"], correct:1, explain:"Assignment says Q = False."
+    },
+    { color:YELLOW, target:"simpAnd",
+      question:"Evaluate (P ∧ Q):",
+      choices:["True","False"], correct:1, explain:"T ∧ F = F."
+    },
+    { color:YELLOW, target:"simpNotL",
+      question:"Compute ¬(P ∧ Q):",
+      choices:["True","False"], correct:0, explain:"¬F = T."
+    },
+    { color:YELLOW, target:"simpNotP",
+      question:"Compute ¬P:",
+      choices:["True","False"], correct:1, explain:"¬T = F."
+    },
+    { color:YELLOW, target:"simpNotQ",
+      question:"Compute ¬Q:",
+      choices:["True","False"], correct:0, explain:"¬F = T."
+    },
+    { color:GREEN,  target:"combineRight",
+      question:"Combine right side (¬P ∨ ¬Q):",
+      choices:["True","False"], correct:0, explain:"F ∨ T = T."
+    },
+    { color:GREEN,  target:"combineImpl",
+      question:"Evaluate the implication: [¬(P ∧ Q)] → [(¬P ∨ ¬Q)]",
+      choices:["True","False"], correct:0, explain:"T → T = T."
+    },
+    { color:ORANGE, target:"finish",
+      question:"Overall formula is:",
+      choices:["True","False"], correct:0, explain:"The statement is True."
+    }
+  ]
+};
+
+/* ========== State & UI helpers ========== */
+let currentColor = null;
+let index = 0;
+let rewinds = 0;
+let correctMC = 0;
+
+function colorName(c){
+  return {BLUE:"🟦 Group", PURPLE:"🟪 Atom", YELLOW:"🟨 Simplify", GREEN:"🟩 Combine", ORANGE:"🟧 Finish"}[c]||c;
+}
+function cssColor(c){
+  return {BLUE:"var(--blue)", PURPLE:"var(--purple)", YELLOW:"var(--yellow)", GREEN:"var(--green)", ORANGE:"var(--orange)"}[c]||"#000";
+}
+
+/* ========== Render problem card ========== */
+function renderProblem(){
+  const host = document.getElementById("problemHost");
+  host.innerHTML = `
+    <div class="problemHead">
+      <div>
+        <div><strong>${problem.title}</strong></div>
+        <div class="formula">${problem.formula}</div>
+        <div style="opacity:.8;font-size:14px">Assignment: ${problem.assignment}</div>
+      </div>
+      <div class="bar"><span id="prog"></span></div>
+    </div>
+
+    <div class="sep"></div>
+    <div><strong>Targets</strong> (click the next part after choosing a color):</div>
+    <div class="targets" id="targets"></div>
+    <div id="mc" class="mc" style="display:none"></div>
+    <div class="log" id="log">Ready. Select a color, then click the next target.</div>
+  `;
+
+  const twrap = document.getElementById("targets");
+  problem.targets.forEach(t=>{
+    const b = document.createElement("button");
+    b.className = "tbtn";
+    b.textContent = t.label;
+    b.dataset.tid = t.id;
+    b.addEventListener("click", ()=>onTarget(t.id, b));
+    twrap.appendChild(b);
+  });
+
+  pulseExpectedGhost();
+}
+
+function setLog(msg, type=""){
+  const el = document.getElementById("log");
+  el.className = "log " + (type==="bad" ? "bad" : type==="good" ? "good" : "");
+  el.textContent = msg;
+}
+function progress(){
+  const pct = Math.round(100 * index / problem.steps.length);
+  document.getElementById("prog").style.width = pct + "%";
+}
+
+/* ========== Interaction ========== */
+function onTarget(tid, btn){
+  const step = problem.steps[index];
+  if(!step) return;
+
+  if(!currentColor){
+    setLog(`Pick a color first (expected ${colorName(step.color)}).`, "bad");
+    pulseRail(step.color);
+    return;
+  }
+
+  const good = currentColor===step.color && tid===step.target;
+  if(!good){
+    rewinds++;
+    setLog(`Oops — expected ${colorName(step.color)} on “${labelOf(tid)}”.`, "bad");
+    pulseRail(step.color);
+    pulseExpectedGhost();
+    return;
+  }
+
+  // Lock this target visually
+  btn.style.outline = `3px solid ${cssColor(step.color)}`;
+  btn.style.borderColor = cssColor(step.color);
+  btn.disabled = true;
+
+  // If this step has MC, show it; otherwise accept immediately
+  if(step.skipMC){
+    acceptStep(true); // no MC, auto-accept
+  }else{
+    showMC(step);
+  }
+}
+
+function labelOf(tid){
+  const t = problem.targets.find(x=>x.id===tid);
+  return t ? t.label : tid;
+}
+
+function showMC(step){
+  const panel = document.getElementById("mc");
+  panel.style.display = "block";
+  panel.innerHTML = `
+    <h3>${step.question}</h3>
+    <div class="choices" id="choices"></div>
+    <div style="margin-top:8px; font-size:13px; opacity:.85">Hint: ${step.explain}</div>
+  `;
+
+  const choicesWrap = document.getElementById("choices");
+  step.choices.forEach((ch, i)=>{
+    const c = document.createElement("button");
+    c.className = "choice";
+    c.textContent = ch;
+    c.addEventListener("click", ()=>{
+      const isCorrect = i===step.correct;
+      c.classList.add(isCorrect ? "correct" : "wrong");
+      if(isCorrect){
+        correctMC++;
+        setTimeout(()=>{ panel.style.display="none"; acceptStep(true); }, 250);
+      }else{
+        setLog("Try again — pick the best answer for this step.", "bad");
+        // keep panel open for retry
+      }
+    });
+    choicesWrap.appendChild(c);
+  });
+}
+
+function acceptStep(ok){
+  if(!ok) return;
+  index++;
+  progress();
+  clearGhost();
+
+  if(index>=problem.steps.length){
+    // Finish
+    const score = `${correctMC} / ${problem.steps.filter(s=>!s.skipMC).length} MC`;
+    setLog(`Finished! Verdict: True. Rewinds: ${rewinds}. Score: ${score}`, "good");
+    pulseRail(ORANGE);
+    return;
+  }
+
+  const next = problem.steps[index];
+  setLog(`Good — now ${colorName(next.color)}.`, "");
+  pulseExpectedGhost();
+}
+
+/* ========== Ghost hint & rail pulse ========== */
+function pulseRail(color){
+  document.querySelectorAll(".swatch").forEach(s=>s.classList.remove("active"));
+  const sw = document.querySelector(`.swatch[data-color="${color}"]`);
+  if(sw){ sw.classList.add("active"); sw.scrollIntoView({block:"nearest", behavior:"smooth"}); }
+}
+function clearGhost(){
+  document.querySelectorAll(".tbtn").forEach(b=>b.classList.remove("ghost"));
+}
+function pulseExpectedGhost(){
+  clearGhost();
+  const step = problem.steps[index];
+  if(!step) return;
+  const btn = document.querySelector(`.tbtn[data-tid="${step.target}"]`);
+  if(btn){
+    btn.classList.add("ghost");
+    btn.style.outline = `2px dashed ${cssColor(step.color)}`;
+  }
+}
+
+/* ========== Color rail handlers ========== */
+document.querySelectorAll(".swatch").forEach(s=>{
+  s.addEventListener("click", ()=>{
+    document.querySelectorAll(".swatch").forEach(x=>x.classList.remove("active"));
+    s.classList.add("active");
+    currentColor = s.getAttribute("data-color");
+  });
+});
+
+/* ========== Kickoff ========== */
+renderProblem();
+</script>
+</body>
+</html>
