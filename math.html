@@ -3,107 +3,125 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Path Tutor — Discrete Logic (Multiple Choice)</title>
+<title>Path Tutor — Discrete Logic (MC + Hint-on-Wrong + End Summary)</title>
 <style>
   :root{
-    --blue:#3b82f6;   /* group */
-    --purple:#a855f7; /* atom */
-    --yellow:#eab308; /* simplify / negation */
-    --green:#22c55e;  /* combine */
-    --orange:#f97316; /* finish */
-    --paper:#f7f3e8;  /* soft background */
-    --ink:#1f2937;
-    --card:#ffffff;
-    --line:#e5e7eb;
+    --blue:#2563eb;   --purple:#7c3aed; --yellow:#ca8a04; --green:#16a34a; --orange:#f97316;
+    --paper:#fbf7ef;  --paper-off:#f3f4f6; --ink:#111827; --card:#ffffff; --line:#e5e7eb;
   }
   *{box-sizing:border-box}
-  body{
-    margin:0; padding:24px;
-    background:var(--paper); color:var(--ink);
-    font:16px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Arial;
-  }
-  h1{margin:0 0 8px 0; font-size:20px}
-  p{margin:8px 0}
-  .wrap{display:grid; grid-template-columns:200px 1fr; gap:16px; max-width:980px; margin:auto}
-  .rail{position:sticky; top:16px; display:flex; flex-direction:column; gap:10px}
-  .swatch{
-    display:flex; align-items:center; gap:10px;
-    background:var(--card); border:1px solid var(--line); border-radius:12px;
-    padding:12px; cursor:pointer; user-select:none
-  }
-  .swatch .dot{width:16px; height:16px; border-radius:50%}
+  body{margin:0; padding:20px; background:var(--paper); color:var(--ink);
+       font:18px/1.6 system-ui, -apple-system, Segoe UI, Roboto, Arial; letter-spacing:.2px;}
+  body.compact{ font-size:16px; line-height:1.4; background:var(--paper-off); }
+  h1{margin:0 0 6px 0; font-size:22px}
+  .topbar{display:flex; gap:12px; align-items:center; justify-content:space-between; max-width:1100px; margin:0 auto 8px}
+  .assist{display:flex; gap:10px; align-items:center}
+  .toggle{display:flex; align-items:center; gap:8px; background:#fff; border:1px solid var(--line);
+          padding:8px 10px; border-radius:12px; font-size:14px}
+  .wrap{display:grid; grid-template-columns:240px 1fr; gap:16px; max-width:1100px; margin:auto}
+  .rail{position:sticky; top:12px; display:flex; flex-direction:column; gap:10px}
+  .swatch{display:flex; align-items:center; gap:10px; background:var(--card); border:2px solid var(--line);
+          border-radius:14px; padding:12px; cursor:pointer; user-select:none}
+  .swatch .dot{width:18px; height:18px; border-radius:50%}
   .blue{color:var(--blue)} .purple{color:var(--purple)} .yellow{color:var(--yellow)}
   .green{color:var(--green)} .orange{color:var(--orange)}
-  .blue .dot{background:var(--blue)} .purple .dot{background:var(--purple)}
-  .yellow .dot{background:var(--yellow)} .green .dot{background:var(--green)}
+  .blue .dot{background:var(--blue)}
+  .purple .dot{background:repeating-linear-gradient(45deg, var(--purple), var(--purple) 6px, #fff 6px, #fff 10px);}
+  .yellow .dot{background:repeating-linear-gradient(90deg, var(--yellow), var(--yellow) 6px, #fff 6px, #fff 10px);}
+  .green .dot{background:radial-gradient(circle at 6px 6px, var(--green) 4px, transparent 5px), var(--green);}
   .orange .dot{background:var(--orange)}
   .active{outline:3px solid currentColor}
-  .card{
-    background:var(--card); border:1px solid var(--line); border-radius:16px;
-    padding:16px; margin-bottom:16px
-  }
-  .problemHead{display:flex; align-items:center; justify-content:space-between; gap:12px}
-  .formula{font-size:20px; letter-spacing:.2px}
-  .bar{height:8px; background:#eee; border-radius:999px; overflow:hidden; min-width:200px}
-  .bar span{display:block; height:100%; width:0;
-    background:linear-gradient(90deg, var(--blue), var(--purple), var(--yellow), var(--green), var(--orange));
-    transition:width .3s}
-  .targets{display:flex; flex-wrap:wrap; gap:8px; margin-top:12px}
-  .tbtn{
-    padding:10px 14px; border-radius:12px; background:#f9fafb; border:1px solid var(--line);
-    cursor:pointer; transition:transform .05s; font-size:14px
-  }
+  .card{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:16px; margin-bottom:16px}
+  .problemHead{display:flex; align-items:flex-start; justify-content:space-between; gap:12px}
+  .formula{font-size:22px; letter-spacing:.3px}
+  .bar{height:10px; background:#eee; border-radius:999px; overflow:hidden; min-width:260px}
+  .bar span{display:block; height:100%; width:0; background:linear-gradient(90deg, var(--blue), var(--purple), var(--yellow), var(--green), var(--orange)); transition:width .3s}
+  .legend{font-size:14px; opacity:.9; margin:6px auto 12px; max-width:1100px}
+  .targets{display:flex; flex-wrap:wrap; gap:10px; margin-top:12px}
+  .tbtn{padding:12px 14px; border-radius:14px; background:#f8fafc; border:2px solid var(--line);
+        cursor:pointer; font-size:16px; min-width:200px; text-align:left}
   .tbtn:active{transform:scale(.98)}
   .tbtn[disabled]{opacity:.55; cursor:not-allowed}
-  .ghost{animation:ghostPulse 1s infinite}
-  @keyframes ghostPulse{
-    0%{box-shadow:0 0 0 0 rgba(0,0,0,0.00)}
-    50%{box-shadow:0 0 0 5px rgba(0,0,0,0.06)}
-    100%{box-shadow:0 0 0 0 rgba(0,0,0,0.00)}
-  }
-  .log{font-size:14px; white-space:pre-wrap; margin-top:8px}
+  .ghost{animation:ghostPulse 1.1s infinite}
+  @keyframes ghostPulse{0%{box-shadow:0 0 0 0 rgba(0,0,0,0)}
+                         50%{box-shadow:0 0 0 6px rgba(0,0,0,0.06)}
+                         100%{box-shadow:0 0 0 0 rgba(0,0,0,0)}}
+  .dimmed{opacity:.35; pointer-events:none}
+  .log{font-size:16px; white-space:pre-wrap; margin-top:10px}
   .bad{color:#b91c1c} .good{color:#065f46}
   .sep{height:1px; background:var(--line); margin:12px 0}
-  /* MC panel */
-  .mc{
-    margin-top:12px; background:#fff; border:1px solid var(--line); border-radius:14px; padding:12px
-  }
-  .mc h3{margin:0 0 8px 0; font-size:16px}
-  .choices{display:flex; flex-wrap:wrap; gap:8px}
-  .choice{
-    padding:10px 12px; border:1px solid var(--line); border-radius:12px;
-    background:#f8fafc; cursor:pointer; font-size:14px
-  }
-  .choice.correct{border-color:#16a34a}
-  .choice.wrong{border-color:#dc2626}
-  .pill{display:inline-block; padding:2px 8px; border-radius:999px; font-size:12px; margin-left:8px}
-  .pill.blue{background:rgba(59,130,246,.15); color:var(--blue)}
-  .pill.purple{background:rgba(168,85,247,.15); color:var(--purple)}
-  .pill.yellow{background:rgba(234,179,8,.15); color:var(--yellow)}
-  .pill.green{background:rgba(34,197,94,.15); color:var(--green)}
-  .pill.orange{background:rgba(249,115,22,.15); color:var(--orange)}
+  .mc{margin-top:12px; background:#fff; border:1px solid var(--line); border-radius:14px; padding:12px}
+  .mc h3{margin:0 0 8px 0; font-size:18px}
+  .choices{display:flex; flex-wrap:wrap; gap:10px}
+  .choice{padding:12px 14px; border:2px solid var(--line); border-radius:12px; background:#f3f4f6; cursor:pointer; font-size:16px}
+  .choice.correct{border-color:#16a34a; background:#ecfdf5}
+  .choice.wrong{border-color:#dc2626; background:#fef2f2}
+  .speakBtn{margin-left:auto; border:1px solid var(--line); background:#fff; border-radius:10px; padding:6px 10px; cursor:pointer; font-size:14px}
+
+  /* Summary */
+  .summary{max-width:1100px; margin:18px auto 0; background:#fff; border:1px solid var(--line); border-radius:16px; padding:16px}
+  .summary h2{margin:0 0 10px 0; font-size:20px}
+  .totals{display:flex; gap:12px; flex-wrap:wrap; margin-bottom:10px}
+  .total{background:#f8fafc; border:1px solid var(--line); border-radius:12px; padding:8px 12px; font-size:15px}
+  table{width:100%; border-collapse:separate; border-spacing:0 8px; font-size:15px}
+  th{text-align:left; opacity:.8; font-weight:600}
+  td, th{padding:8px 10px}
+  tr{background:#fbfbfb; border:1px solid var(--line)}
+  tr td:first-child, tr th:first-child{border-top-left-radius:10px; border-bottom-left-radius:10px}
+  tr td:last-child, tr th:last-child{border-top-right-radius:10px; border-bottom-right-radius:10px}
 </style>
 </head>
 <body>
-  <h1>Path Tutor — Discrete Logic (Multiple Choice, Single Problem)</h1>
-  <p>Pick a color, click the next part of the formula, then answer the multiple-choice for that step. If you pick out of order, a ghost hint will nudge you.</p>
+  <div class="topbar">
+    <h1>Path Tutor — Discrete Logic</h1>
+    <div class="assist">
+      <label class="toggle">
+        <input id="modeToggle" type="checkbox" checked />
+        <span>🧩 Dyslexia Mode</span>
+      </label>
+      <button class="speakBtn" id="speakLegend">🔊 Speak Legend</button>
+    </div>
+  </div>
+
+  <p class="legend">Follow the color order with icon backups:
+    🟦 <b>Group</b> (<code>()</code>) •
+    🟪 <b>Atom</b> (P,Q) •
+    🟨 <b>Simplify</b> (¬) •
+    🟩 <b>Combine</b> (∧ ∨ →) •
+    🟧 <b>Finish</b> (✓)
+  </p>
 
   <div class="wrap">
     <!-- COLOR RAIL -->
     <div class="rail" id="rail">
-      <div class="swatch blue"   data-color="BLUE"><div class="dot"></div>🟦 Group <span class="pill blue">scope</span></div>
-      <div class="swatch purple" data-color="PURPLE"><div class="dot"></div>🟪 Atom <span class="pill purple">P, Q…</span></div>
-      <div class="swatch yellow" data-color="YELLOW"><div class="dot"></div>🟨 Simplify <span class="pill yellow">¬, identities</span></div>
-      <div class="swatch green"  data-color="GREEN"><div class="dot"></div>🟩 Combine <span class="pill green">∧ ∨ →</span></div>
-      <div class="swatch orange" data-color="ORANGE"><div class="dot"></div>🟧 Finish <span class="pill orange">verdict</span></div>
+      <div class="swatch blue"   data-color="BLUE"><div class="dot"></div>🟦 Group</div>
+      <div class="swatch purple" data-color="PURPLE"><div class="dot"></div>🟪 Atom</div>
+      <div class="swatch yellow" data-color="YELLOW"><div class="dot"></div>🟨 Simplify</div>
+      <div class="swatch green"  data-color="GREEN"><div class="dot"></div>🟩 Combine</div>
+      <div class="swatch orange" data-color="ORANGE"><div class="dot"></div>🟧 Finish</div>
     </div>
 
-    <!-- PROBLEM -->
+    <!-- PROBLEM CARD -->
     <div id="problemHost" class="card"></div>
   </div>
 
+  <!-- END SUMMARY (hidden until finish) -->
+  <div id="summary" class="summary" style="display:none"></div>
+
 <script>
-/* ========== Color + Problem spec (single problem) ========== */
+/* ===== TTS ===== */
+function speak(text){
+  try{
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.rate = 0.95; u.pitch = 1; u.lang = 'en-US';
+    window.speechSynthesis.speak(u);
+  }catch(e){}
+}
+document.getElementById('speakLegend').onclick = () =>
+  speak("Blue group. Purple atom. Yellow simplify. Green combine. Orange finish.");
+
+/* ===== Colors & Problem ===== */
 const BLUE="BLUE", PURPLE="PURPLE", YELLOW="YELLOW", GREEN="GREEN", ORANGE="ORANGE";
 
 const problem = {
@@ -124,86 +142,115 @@ const problem = {
     {id:"combineImpl",  label:"combine: →"},
     {id:"finish",     label:"finish"}
   ],
-  // Steps define: expected (color, target) + the MC question for that step
   steps:[
-    { color:BLUE,   target:"scopeLeft",
-      question:"Mark the left scope.",
-      choices:["Continue"], correct:0, explain:"We’ll solve inside the left group.", skipMC:true
-    },
-    { color:BLUE,   target:"scopeRight",
-      question:"Mark the right scope.",
-      choices:["Continue"], correct:0, explain:"We’ll solve inside the right group after atoms.", skipMC:true
-    },
-    { color:PURPLE, target:"atomP",
-      question:"What is P?",
-      choices:["True","False"], correct:0, explain:"Assignment says P = True."
-    },
-    { color:PURPLE, target:"atomQ",
-      question:"What is Q?",
-      choices:["True","False"], correct:1, explain:"Assignment says Q = False."
-    },
-    { color:YELLOW, target:"simpAnd",
-      question:"Evaluate (P ∧ Q):",
-      choices:["True","False"], correct:1, explain:"T ∧ F = F."
-    },
-    { color:YELLOW, target:"simpNotL",
-      question:"Compute ¬(P ∧ Q):",
-      choices:["True","False"], correct:0, explain:"¬F = T."
-    },
-    { color:YELLOW, target:"simpNotP",
-      question:"Compute ¬P:",
-      choices:["True","False"], correct:1, explain:"¬T = F."
-    },
-    { color:YELLOW, target:"simpNotQ",
-      question:"Compute ¬Q:",
-      choices:["True","False"], correct:0, explain:"¬F = T."
-    },
-    { color:GREEN,  target:"combineRight",
-      question:"Combine right side (¬P ∨ ¬Q):",
-      choices:["True","False"], correct:0, explain:"F ∨ T = T."
-    },
-    { color:GREEN,  target:"combineImpl",
-      question:"Evaluate the implication: [¬(P ∧ Q)] → [(¬P ∨ ¬Q)]",
-      choices:["True","False"], correct:0, explain:"T → T = T."
-    },
-    { color:ORANGE, target:"finish",
-      question:"Overall formula is:",
-      choices:["True","False"], correct:0, explain:"The statement is True."
-    }
+    { color:BLUE, target:"scopeLeft",  cue:"Blue: group left.",
+      question:"Which part is the LEFT group?",
+      choices:["¬(P ∧ Q)","(¬P ∨ ¬Q)","P","Q"], correct:0, explain:"Left side is ¬(P ∧ Q)." },
+
+    { color:BLUE, target:"scopeRight", cue:"Blue: group right.",
+      question:"Which part is the RIGHT group?",
+      choices:["(¬P ∨ ¬Q)","¬(P ∧ Q)","P ∧ Q","→"], correct:0, explain:"Right side is (¬P ∨ ¬Q)." },
+
+    { color:PURPLE, target:"atomP", cue:"Purple: evaluate P.",
+      question:"What is P?", choices:["True","False"], correct:0, explain:"Assignment says P = True." },
+
+    { color:PURPLE, target:"atomQ", cue:"Purple: evaluate Q.",
+      question:"What is Q?", choices:["True","False"], correct:1, explain:"Assignment says Q = False." },
+
+    { color:YELLOW, target:"simpAnd", cue:"Yellow: evaluate (P ∧ Q).",
+      question:"Evaluate (P ∧ Q):", choices:["True","False"], correct:1, explain:"T ∧ F = F." },
+
+    { color:YELLOW, target:"simpNotL", cue:"Yellow: apply not to the left.",
+      question:"Compute ¬(P ∧ Q):", choices:["True","False"], correct:0, explain:"¬F = T." },
+
+    { color:YELLOW, target:"simpNotP", cue:"Yellow: not P.",
+      question:"Compute ¬P:", choices:["True","False"], correct:1, explain:"¬T = F." },
+
+    { color:YELLOW, target:"simpNotQ", cue:"Yellow: not Q.",
+      question:"Compute ¬Q:", choices:["True","False"], correct:0, explain:"¬F = T." },
+
+    { color:GREEN, target:"combineRight", cue:"Green: combine with or.",
+      question:"Right side (¬P ∨ ¬Q) equals:", choices:["True","False"], correct:0, explain:"F ∨ T = T." },
+
+    { color:GREEN, target:"combineImpl", cue:"Green: evaluate the implication.",
+      question:"Evaluate: [¬(P ∧ Q)] → [(¬P ∨ ¬Q)]", choices:["True","False"], correct:0, explain:"T → T = T." },
+
+    { color:ORANGE, target:"finish", cue:"Orange: finished.",
+      question:"Overall formula is:", choices:["True","False"], correct:0, explain:"The statement is True." }
   ]
 };
 
-/* ========== State & UI helpers ========== */
+/* ===== State & Counters ===== */
 let currentColor = null;
 let index = 0;
-let rewinds = 0;
-let correctMC = 0;
+let idleTimer = null;
 
+let routeMisclicks = 0;   // wrong color/target before MC
+let mcMisclicks = 0;      // wrong MC option
+let ghostHints = 0;       // dashed-outline hints shown because of help (misclick or idle)
+
+/* Per-step breakdown */
+const stepStats = problem.steps.map((s, i)=>({
+  idx: i,
+  color: s.color,
+  targetId: s.target,
+  routeMis: 0,
+  mcMis: 0,
+  ghosts: 0
+}));
+
+/* ===== Utilities ===== */
+function cssColor(c){
+  return {BLUE:"var(--blue)", PURPLE:"var(--purple)", YELLOW:"var(--yellow)", GREEN:"var(--green)", ORANGE:"var(--orange)"}[c] || "#000";
+}
 function colorName(c){
   return {BLUE:"🟦 Group", PURPLE:"🟪 Atom", YELLOW:"🟨 Simplify", GREEN:"🟩 Combine", ORANGE:"🟧 Finish"}[c]||c;
 }
-function cssColor(c){
-  return {BLUE:"var(--blue)", PURPLE:"var(--purple)", YELLOW:"var(--yellow)", GREEN:"var(--green)", ORANGE:"var(--orange)"}[c]||"#000";
+function targetLabelById(id){
+  const t = problem.targets.find(x=>x.id===id);
+  return t ? t.label : id;
+}
+function setLog(msg, type=""){
+  const el = document.getElementById("log");
+  el.className = "log " + (type==="bad" ? "bad" : type==="good" ? "good" : "");
+  el.textContent = msg;
+}
+function progress(){
+  const pct = Math.round(100 * index / problem.steps.length);
+  document.getElementById("prog").style.width = pct + "%";
 }
 
-/* ========== Render problem card ========== */
-function renderProblem(){
+/* ===== Idle hint timer (shows ghost as a hint) ===== */
+function startIdleTimer(){
+  clearTimeout(idleTimer);
+  idleTimer = setTimeout(()=>{
+    pulseExpectedGhost('hint');  // counts as a ghost hint
+    const step = problem.steps[index];
+    if(step) speak(step.cue || "Next step.");
+  }, 6000); // 6s idle → hint
+}
+
+/* ===== Render ===== */
+function render(){
   const host = document.getElementById("problemHost");
   host.innerHTML = `
     <div class="problemHead">
       <div>
         <div><strong>${problem.title}</strong></div>
-        <div class="formula">${problem.formula}</div>
-        <div style="opacity:.8;font-size:14px">Assignment: ${problem.assignment}</div>
+        <div class="formula" aria-label="formula">${problem.formula}</div>
+        <div style="opacity:.85;font-size:15px">Assignment: ${problem.assignment}</div>
       </div>
-      <div class="bar"><span id="prog"></span></div>
+      <div style="min-width:280px; display:flex; flex-direction:column; gap:8px">
+        <div class="bar"><span id="prog"></span></div>
+        <button class="speakBtn" id="speakStep">🔊 Speak Step</button>
+      </div>
     </div>
 
     <div class="sep"></div>
-    <div><strong>Targets</strong> (click the next part after choosing a color):</div>
+    <div><strong>Targets</strong> — click the next part after choosing a color:</div>
     <div class="targets" id="targets"></div>
     <div id="mc" class="mc" style="display:none"></div>
-    <div class="log" id="log">Ready. Select a color, then click the next target.</div>
+    <div class="log" id="log">Pick a color, then click the highlighted target.</div>
   `;
 
   const twrap = document.getElementById("targets");
@@ -216,50 +263,49 @@ function renderProblem(){
     twrap.appendChild(b);
   });
 
-  pulseExpectedGhost();
-}
+  document.getElementById("speakStep").onclick = ()=>{
+    const step = problem.steps[index];
+    speak(step ? step.cue || "Next step." : "Finished");
+  }
 
-function setLog(msg, type=""){
-  const el = document.getElementById("log");
-  el.className = "log " + (type==="bad" ? "bad" : type==="good" ? "good" : "");
-  el.textContent = msg;
+  pulseExpectedGhost('init');   // initial visual (not counted)
+  startIdleTimer();
+  updateFocusDim();
+  progress();
 }
-function progress(){
-  const pct = Math.round(100 * index / problem.steps.length);
-  document.getElementById("prog").style.width = pct + "%";
-}
+render();
 
-/* ========== Interaction ========== */
+/* ===== Interaction ===== */
 function onTarget(tid, btn){
+  startIdleTimer();
   const step = problem.steps[index];
   if(!step) return;
 
   if(!currentColor){
     setLog(`Pick a color first (expected ${colorName(step.color)}).`, "bad");
     pulseRail(step.color);
+    pulseExpectedGhost('hint'); // counts as hint
     return;
   }
 
-  const good = currentColor===step.color && tid===step.target;
-  if(!good){
-    rewinds++;
-    setLog(`Oops — expected ${colorName(step.color)} on “${labelOf(tid)}”.`, "bad");
+  const ok = (currentColor===step.color && tid===step.target);
+  if(!ok){
+    routeMisclicks++;
+    stepStats[index].routeMis++;
+    setLog(`Try this one → ${colorName(step.color)} on "${labelOf(tid)}".`, "bad");
     pulseRail(step.color);
-    pulseExpectedGhost();
+    pulseExpectedGhost('hint'); // counts as hint
+    speak(`Use ${colorName(step.color).split(' ')[1]}.`);
     return;
   }
 
-  // Lock this target visually
+  // Accept route step
   btn.style.outline = `3px solid ${cssColor(step.color)}`;
   btn.style.borderColor = cssColor(step.color);
   btn.disabled = true;
 
-  // If this step has MC, show it; otherwise accept immediately
-  if(step.skipMC){
-    acceptStep(true); // no MC, auto-accept
-  }else{
-    showMC(step);
-  }
+  speak(step.cue || "Good.");
+  showMC(step);
 }
 
 function labelOf(tid){
@@ -267,85 +313,180 @@ function labelOf(tid){
   return t ? t.label : tid;
 }
 
+/* ===== Multiple Choice: hint-on-wrong ===== */
 function showMC(step){
   const panel = document.getElementById("mc");
   panel.style.display = "block";
   panel.innerHTML = `
     <h3>${step.question}</h3>
     <div class="choices" id="choices"></div>
-    <div style="margin-top:8px; font-size:13px; opacity:.85">Hint: ${step.explain}</div>
+    <div id="hint" style="display:none; margin-top:8px; font-size:14px; opacity:.95;">
+      💡 Hint: ${step.explain}
+    </div>
+    <button class="speakBtn" id="speakMC">🔊 Speak Question</button>
   `;
+  document.getElementById('speakMC').onclick = ()=> speak(step.question);
 
   const choicesWrap = document.getElementById("choices");
+  choicesWrap.innerHTML = "";
+  const hintEl = document.getElementById("hint");
+
   step.choices.forEach((ch, i)=>{
     const c = document.createElement("button");
     c.className = "choice";
     c.textContent = ch;
     c.addEventListener("click", ()=>{
       const isCorrect = i===step.correct;
-      c.classList.add(isCorrect ? "correct" : "wrong");
       if(isCorrect){
-        correctMC++;
-        setTimeout(()=>{ panel.style.display="none"; acceptStep(true); }, 250);
+        c.classList.add("correct");
+        setTimeout(()=>{ panel.style.display="none"; acceptStep(); }, 260);
       }else{
-        setLog("Try again — pick the best answer for this step.", "bad");
-        // keep panel open for retry
+        mcMisclicks++;
+        stepStats[index].mcMis++;
+        c.classList.add("wrong");
+        if(hintEl.style.display === "none"){
+          hintEl.style.display = "block";
+          speak(step.explain);
+        }
+        setLog("Try again — use the hint if you like.", "bad");
       }
     });
     choicesWrap.appendChild(c);
   });
 }
 
-function acceptStep(ok){
-  if(!ok) return;
+/* ===== Advance / Finish ===== */
+function acceptStep(){
   index++;
   progress();
   clearGhost();
 
   if(index>=problem.steps.length){
-    // Finish
-    const score = `${correctMC} / ${problem.steps.filter(s=>!s.skipMC).length} MC`;
-    setLog(`Finished! Verdict: True. Rewinds: ${rewinds}. Score: ${score}`, "good");
+    showSummary();
+    speak("Finished. Great job.");
     pulseRail(ORANGE);
+    updateFocusDim(true);
     return;
   }
-
   const next = problem.steps[index];
   setLog(`Good — now ${colorName(next.color)}.`, "");
-  pulseExpectedGhost();
+  pulseExpectedGhost('advance');  // not counted
+  updateFocusDim();
+  startIdleTimer();
 }
 
-/* ========== Ghost hint & rail pulse ========== */
+/* ===== Visual helpers ===== */
 function pulseRail(color){
   document.querySelectorAll(".swatch").forEach(s=>s.classList.remove("active"));
   const sw = document.querySelector(`.swatch[data-color="${color}"]`);
   if(sw){ sw.classList.add("active"); sw.scrollIntoView({block:"nearest", behavior:"smooth"}); }
 }
 function clearGhost(){
-  document.querySelectorAll(".tbtn").forEach(b=>b.classList.remove("ghost"));
+  document.querySelectorAll(".tbtn").forEach(b=>{
+    b.classList.remove("ghost");
+    b.style.outlineStyle = 'solid';
+  });
 }
-function pulseExpectedGhost(){
+
+/* reason: 'init' | 'advance' | 'hint' */
+function pulseExpectedGhost(reason='hint'){
   clearGhost();
   const step = problem.steps[index];
   if(!step) return;
+
   const btn = document.querySelector(`.tbtn[data-tid="${step.target}"]`);
-  if(btn){
-    btn.classList.add("ghost");
-    btn.style.outline = `2px dashed ${cssColor(step.color)}`;
+  if(!btn) return;
+
+  btn.classList.add("ghost");
+  btn.style.outline = `3px dashed ${cssColor(step.color)}`;
+
+  // Count only when this is a *helpful* hint, not initial render or normal advance
+  if(reason === 'hint'){
+    ghostHints++;
+    stepStats[index].ghosts++;
   }
 }
 
-/* ========== Color rail handlers ========== */
+function updateFocusDim(done=false){
+  const step = problem.steps[index];
+  document.querySelectorAll(".tbtn").forEach(b=>{
+    if(done){ b.classList.remove('dimmed'); return; }
+    const dim = step ? b.dataset.tid !== step.target : false;
+    b.classList.toggle('dimmed', dim);
+  });
+}
+
+/* ===== End Summary ===== */
+function showSummary(){
+  const totalSteps = problem.steps.length;
+  const summary = document.getElementById('summary');
+  const totalsHtml = `
+    <div class="totals">
+      <div class="total"><strong>Route misclicks:</strong> ${routeMisclicks}</div>
+      <div class="total"><strong>MC misclicks:</strong> ${mcMisclicks}</div>
+      <div class="total"><strong>Ghost hints:</strong> ${ghostHints}</div>
+      <div class="total"><strong>Steps:</strong> ${totalSteps}</div>
+    </div>
+  `;
+
+  // Table rows
+  const rows = stepStats.map(s=>{
+    const color = colorName(s.color);
+    const target = targetLabelById(s.targetId);
+    return `
+      <tr>
+        <td>#${s.idx+1}</td>
+        <td>${color}</td>
+        <td>${target}</td>
+        <td>${s.routeMis}</td>
+        <td>${s.mcMis}</td>
+        <td>${s.ghosts}</td>
+      </tr>
+    `;
+  }).join('');
+
+  summary.innerHTML = `
+    <h2>Session Summary</h2>
+    ${totalsHtml}
+    <table>
+      <thead>
+        <tr>
+          <th>Step</th>
+          <th>Phase</th>
+          <th>Target</th>
+          <th>Route Misclicks</th>
+          <th>MC Misclicks</th>
+          <th>Ghost Hints</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+  `;
+  summary.style.display = 'block';
+  setLog("Finished! See summary below.", "good");
+}
+
+/* ===== Color rail ===== */
 document.querySelectorAll(".swatch").forEach(s=>{
   s.addEventListener("click", ()=>{
     document.querySelectorAll(".swatch").forEach(x=>x.classList.remove("active"));
     s.classList.add("active");
     currentColor = s.getAttribute("data-color");
+    startIdleTimer();
+    const step = problem.steps[index];
+    if(step && step.color !== currentColor){
+      speak(`Need ${colorName(step.color).split(' ')[1]}.`);
+    }
   });
 });
 
-/* ========== Kickoff ========== */
-renderProblem();
+/* ===== Dyslexia Mode toggle ===== */
+const modeToggle = document.getElementById('modeToggle');
+modeToggle.onchange = (e)=>{
+  if(e.target.checked){ document.body.classList.remove('compact'); }
+  else{ document.body.classList.add('compact'); }
+};
 </script>
 </body>
 </html>
+
