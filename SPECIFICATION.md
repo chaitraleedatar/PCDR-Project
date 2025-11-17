@@ -2,7 +2,7 @@
 
 ## 1. Problem Statement
 
-Students with dyslexia face barriers learning discrete mathematics: reading-intensive problem statements, working memory overload, sequential processing challenges, and abstract symbol manipulation. ColorPath Logic Tutor addresses these through minimal reading requirements (visual color-coding), gentle feedback, clear sequencing, and stepwise learning.
+Students with dyslexia face barriers learning discrete mathematics: reading-intensive problem statements, working memory overload, sequential processing challenges, and abstract symbol manipulation. ColorPath addresses these through minimal reading requirements (visual color-coding), gentle feedback, clear sequencing, and stepwise learning.
 
 ## 2. Design Overview
 
@@ -131,7 +131,7 @@ Uses Web Speech API (`window.speechSynthesis`):
 ## 6. Research Questions
 
 1. What barriers do dyslexic students face when learning discrete mathematics?
-2. How does ColorPath Logic Tutor address these barriers?
+2. How does ColorPath address these barriers?
 3. What is the effectiveness of the color-sequenced approach?
 
 **Evaluation**: Pilot study (2-3 participants) with think-aloud protocol, task completion, and interviews. Future full study with control/experimental groups.
