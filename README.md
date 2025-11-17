@@ -54,4 +54,4 @@ Single-page web application using vanilla HTML5, CSS3, and JavaScript (ES6+) wit
 
 ---
 
-**Course**: Programmer Centric Design and Research | **Institution**: NC State University | **Fall 2024**
+**Course**: Programmer Centric Design and Research | **Institution**: NC State University | **Fall 2025**
