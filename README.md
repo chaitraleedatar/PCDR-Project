@@ -1,10 +1,10 @@
-# ColorPath Logic Tutor
+# ColorPath
 
 **A visual-first learning tool for dyslexic students learning discrete mathematics**
 
 ## Overview
 
-ColorPath Logic Tutor helps students with dyslexia learn propositional logic using a color-sequenced workflow instead of text-heavy interfaces. Students follow colors (Blue → Purple → Yellow → Green → Orange) to solve logic problems step-by-step.
+ColorPath helps students with dyslexia learn propositional logic using a color-sequenced workflow instead of text-heavy interfaces. Students follow colors (Blue → Purple → Yellow → Green → Orange) to solve logic problems step-by-step.
 
 ## How It Helps Dyslexic Students
 
@@ -42,7 +42,7 @@ Single-page web application using vanilla HTML5, CSS3, and JavaScript (ES6+) wit
 ## Research Questions
 
 1. What barriers do dyslexic students face when learning discrete mathematics?
-2. How does ColorPath Logic Tutor address these barriers?
+2. How does ColorPath address these barriers?
 3. What is the effectiveness of the color-sequenced approach?
 
 ## Project Files
