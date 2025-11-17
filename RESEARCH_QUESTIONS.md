@@ -1,6 +1,6 @@
 # Research Questions
 
-## Primary Questions
+
 
 ### RQ1: What barriers do dyslexic students face?
 - Which aspects of traditional interfaces cause difficulty?
