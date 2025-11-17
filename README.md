@@ -10,13 +10,13 @@ ColorPath helps students with dyslexia learn propositional logic using a color-s
 
 **Visual-first learning**: Students follow colors instead of reading instructions, reducing reading load and using visual processing strengths.
 
-**Step-by-step scaffolding**: Complex problems break into small sequential steps, reducing working memory overload.
+**Step-by-step scaffolding**: Complex problems break down into smaller sequential steps, reducing workload.
 
 **Minimal reading**: Interface uses colors, icons, and short questions. Students rely on visual cues rather than dense text.
 
 **Gentle feedback**: Errors show hints, not failure messages, reducing anxiety and encouraging experimentation.
 
-**Text-to-speech support**: All content can be spoken aloud, helping students who struggle with reading.
+**Text-to-speech support**: All content can be spoken aloud, helping students who struggle with reading better understand the problem.
 
 **Clear sequencing**: Color order makes logical flow explicit without parsing complex notation.
 
