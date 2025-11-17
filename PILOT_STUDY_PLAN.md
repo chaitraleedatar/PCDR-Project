@@ -30,7 +30,7 @@ Show color system and basic workflow. Allow 2-3 minutes exploration.
 ### 5. Post-Study Interview (10-15 min)
 
 **Key Questions**:
-1. Overall thoughts on the tool?
+1. Overall thoughts on the tool and how it altered learning?
 2. What did you think of the color-coding system?
 3. Did colors help you understand the sequence?
 4. Were any colors confusing?
