@@ -26,9 +26,9 @@ Done! See summary.
 
 ## Mistakes Are OK
 
-- Wrong color? Voice tells you the correct one
-- Wrong answer? Hint appears automatically
-- Stuck? Wait 6 seconds for a hint
+- Wrong color? Voice tells you the correct one if misclick occurs
+- Wrong answer? Hints appear automatically to lead you in the right direction
+- Stuck? Wait 6 seconds for a spoken hint
 
 The tool is gentle - it helps you learn, does not punish for mistakes.
 
@@ -36,7 +36,7 @@ The tool is gentle - it helps you learn, does not punish for mistakes.
 
 **Visual-first**: Colors replace text instructions, reducing reading load.
 
-**Step-by-step**: Each step is separate, preventing overwhelm.
+**Step-by-step**: Each step is separate, preventing overwhelming feelings.
 
 **Minimal reading**: Visual cues show what to do.
 
