@@ -7,7 +7,7 @@
 - How do reading-intensive problems impact performance?
 - What role does working memory play?
 
-### RQ2: How does ColorPath Logic Tutor address these barriers?
+### RQ2: How does ColorPath address these barriers?
 - Does color-coding reduce cognitive load?
 - Does stepwise progression improve comprehension?
 - Does gentle feedback reduce anxiety?
@@ -28,7 +28,7 @@
 ### Full Study (Future)
 - Within-group design: same students over multiple sessions
 - Control group: traditional text-based interface
-- Experimental group: ColorPath Logic Tutor
+- Experimental group: ColorPath 
 - Measures: accuracy, time, confidence, retention
 
 ## Success Criteria
