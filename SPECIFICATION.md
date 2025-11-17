@@ -145,4 +145,4 @@ Uses Web Speech API (`window.speechSynthesis`):
 
 ---
 
-**Word Count**: ~1,200 words (condensed from original ~2,500)
+
