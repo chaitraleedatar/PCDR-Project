@@ -1,4 +1,4 @@
-# ColorPath Logic Tutor: Design Specification
+# ColorPath: Design Specification
 
 ## 1. Problem Statement
 
@@ -8,7 +8,7 @@ Students with dyslexia face barriers learning discrete mathematics: reading-inte
 
 ### Core Concept
 
-ColorPath Logic Tutor guides students through logical formulas using a color-coded sequence:
+ColorPath guides students through logical formulas using a color-coded sequence:
 - **🟦 Blue (Group)**: Identify scope, parentheses, clauses
 - **🟪 Purple (Atom)**: Evaluate atomic propositions (P, Q, R, etc.)
 - **🟨 Yellow (Simplify)**: Apply negation, identities, De Morgan's laws
