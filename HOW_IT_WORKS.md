@@ -30,7 +30,7 @@ Done! See summary.
 - Wrong answer? Hint appears automatically
 - Stuck? Wait 6 seconds for a hint
 
-The tool is gentle - it helps you learn, not punish mistakes.
+The tool is gentle - it helps you learn, does not punish for mistakes.
 
 ## Why This Helps Dyslexic Students
 
