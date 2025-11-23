@@ -7,7 +7,7 @@
 <meta name="description" content="A visual-first learning tool for dyslexic students learning propositional logic and truth tables" />
 <style>
   :root{
-    --blue:#2563eb;   --purple:#7c3aed; --yellow:#ca8a04; --green:#16a34a; --orange:#f97316;
+    --blue:#2563eb;   --purple:#7c3aed; --yellow:#ca8a04; --green:#16a34a; --orange:#ea580c;
     --paper:#fbf7ef;  --paper-off:#f3f4f6; --ink:#111827; --card:#ffffff; --line:#e5e7eb;
     --error:#dc2626;  --success:#065f46;   --hint:#fbbf24;
   }
@@ -58,7 +58,7 @@
   .purple .dot{background:repeating-linear-gradient(45deg, var(--purple), var(--purple) 6px, #fff 6px, #fff 10px);}
   .yellow .dot{background:repeating-linear-gradient(90deg, var(--yellow), var(--yellow) 6px, #fff 6px, #fff 10px);}
   .green .dot{background:radial-gradient(circle at 6px 6px, var(--green) 4px, transparent 5px), var(--green);}
-  .orange .dot{background:var(--orange)}
+  .orange .dot{background:repeating-linear-gradient(45deg, var(--orange) 0px, var(--orange) 3px, #fff 3px, #fff 6px, var(--orange) 6px, var(--orange) 9px, #fff 9px, #fff 12px);}
   .swatch.active{outline:3px solid currentColor; outline-offset:2px; background:#f0f9ff}
   
   .card{
@@ -208,6 +208,10 @@
         <input id="modeToggle" type="checkbox" checked />
         <span>🧩 Dyslexia-Friendly Mode</span>
       </label>
+      <label class="toggle">
+        <input id="hintToggle" type="checkbox" />
+        <span>💡 Auto Hints (6s)</span>
+      </label>
       <button class="speakBtn" id="speakLegend" title="Speak color legend">🔊 Speak Legend</button>
     </div>
   </div>
@@ -251,9 +255,9 @@
         <div class="dot" aria-hidden="true"></div>
         <span>🟩 Combine</span>
       </div>
-      <div class="swatch orange" data-color="ORANGE" role="button" tabindex="0" aria-label="Orange: Finish phase">
+      <div class="swatch orange" data-color="ORANGE" role="button" tabindex="0" aria-label="Orange: Final Answer phase">
         <div class="dot" aria-hidden="true"></div>
-        <span>🟧 Finish</span>
+        <span>🟧 Final Answer</span>
       </div>
     </div>
 
@@ -276,7 +280,7 @@ function speak(text){
 }
 
 document.getElementById('speakLegend').onclick = () =>
-  speak("Blue group. Purple atom. Yellow simplify. Green combine. Orange finish.");
+  speak("Blue group. Purple atom. Yellow simplify. Green combine. Orange final answer.");
 
 /* ===== Problem Definitions ===== */
 const BLUE="BLUE", PURPLE="PURPLE", YELLOW="YELLOW", GREEN="GREEN", ORANGE="ORANGE";
@@ -381,6 +385,7 @@ let currentProblem = problems.P1;
 let currentColor = null;
 let index = 0;
 let idleTimer = null;
+let autoHintsEnabled = false;
 let routeMisclicks = 0;
 let mcMisclicks = 0;
 let ghostHints = 0;
@@ -391,7 +396,7 @@ function cssColor(c){
   return {BLUE:"var(--blue)", PURPLE:"var(--purple)", YELLOW:"var(--yellow)", GREEN:"var(--green)", ORANGE:"var(--orange)"}[c] || "#000";
 }
 function colorName(c){
-  return {BLUE:"🟦 Group", PURPLE:"🟪 Atom", YELLOW:"🟨 Simplify", GREEN:"🟩 Combine", ORANGE:"🟧 Finish"}[c]||c;
+  return {BLUE:"🟦 Group", PURPLE:"🟪 Atom", YELLOW:"🟨 Simplify", GREEN:"🟩 Combine", ORANGE:"🟧 Final Answer"}[c]||c;
 }
 function targetLabelById(id){
   const t = currentProblem.targets.find(x=>x.id===id);
@@ -426,6 +431,7 @@ function resetState(){
 /* ===== Idle Timer ===== */
 function startIdleTimer(){
   clearTimeout(idleTimer);
+  if(!autoHintsEnabled) return; // Only start timer if auto hints are enabled
   idleTimer = setTimeout(()=>{
     const step = currentProblem.steps[index];
     if(step) {
@@ -452,6 +458,7 @@ function render(){
         <div class="bar"><span id="prog"></span></div>
         <div class="progressText" id="progText">0/${currentProblem.steps.length} steps</div>
         <button class="speakBtn" id="speakStep">🔊 Speak Current Step</button>
+        <button class="speakBtn" id="getHint" style="margin-top:8px">💡 Get Hint</button>
       </div>
     </div>
     <div class="sep"></div>
@@ -462,6 +469,21 @@ function render(){
   document.getElementById("speakStep").onclick = ()=>{
     const step = currentProblem.steps[index];
     speak(step ? step.cue || "Next step." : "Finished");
+  }
+
+  document.getElementById("getHint").onclick = ()=>{
+    const step = currentProblem.steps[index];
+    if(step) {
+      const expectedColor = colorName(step.color).split(' ')[1];
+      setLog(`Hint: Select ${colorName(step.color)} for the next step.`, "info");
+      speak(`Hint: Select ${expectedColor} color for the next step.`);
+      pulseRail(step.color);
+      ghostHints++;
+      if(stepStats[index]) stepStats[index].ghosts++;
+    } else {
+      setLog("You've completed all steps!", "good");
+      speak("You've completed all steps!");
+    }
   }
 
   startIdleTimer();
@@ -633,6 +655,17 @@ const modeToggle = document.getElementById('modeToggle');
 modeToggle.onchange = (e)=>{
   if(e.target.checked){ document.body.classList.remove('compact'); }
   else{ document.body.classList.add('compact'); }
+};
+
+/* ===== Auto Hints Toggle ===== */
+const hintToggle = document.getElementById('hintToggle');
+hintToggle.onchange = (e)=>{
+  autoHintsEnabled = e.target.checked;
+  if(!autoHintsEnabled){
+    clearTimeout(idleTimer); // Stop any pending hints
+  } else {
+    startIdleTimer(); // Start timer if enabled
+  }
 };
 
 // Initial render
