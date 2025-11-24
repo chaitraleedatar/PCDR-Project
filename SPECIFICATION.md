@@ -69,9 +69,10 @@ Single-page web application using vanilla HTML, CSS, and JavaScript. No external
 {
   currentColor: string | null,
   index: number,          // Current step index
+  autoHintsEnabled: boolean, // Whether auto-hints are enabled
   routeMisclicks: number, // Wrong color attempts
   mcMisclicks: number,    // Wrong answer attempts
-  ghostHints: number      // Hints shown
+  ghostHints: number      // Hints shown (manual + auto)
 }
 ```
 
