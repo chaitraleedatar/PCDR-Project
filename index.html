@@ -7,7 +7,7 @@
 <meta name="description" content="A visual-first learning tool for dyslexic students learning propositional logic and truth tables" />
 <style>
   :root{
-    --blue:#2563eb;   --purple:#7c3aed; --yellow:#ca8a04; --green:#16a34a; --orange:#ea580c;
+    --blue:#2563eb;   --violet:#8b5cf6; --yellow:#fde047; --green:#22c55e; --red:#ef4444;
     --paper:#fbf7ef;  --paper-off:#f3f4f6; --ink:#111827; --card:#ffffff; --line:#e5e7eb;
     --error:#dc2626;  --success:#065f46;   --hint:#fbbf24;
   }
@@ -52,13 +52,13 @@
   }
   .swatch:hover{background:#f8fafc; transform:translateX(2px)}
   .swatch .dot{width:20px; height:20px; border-radius:50%; flex-shrink:0}
-  .blue{color:var(--blue)} .purple{color:var(--purple)} .yellow{color:var(--yellow)}
-  .green{color:var(--green)} .orange{color:var(--orange)}
+  .blue{color:var(--blue)} .violet{color:var(--violet)} .yellow{color:var(--yellow)}
+  .green{color:var(--green)} .red{color:var(--red)}
   .blue .dot{background:var(--blue)}
-  .purple .dot{background:repeating-linear-gradient(45deg, var(--purple), var(--purple) 6px, #fff 6px, #fff 10px);}
+  .violet .dot{background:repeating-linear-gradient(45deg, var(--violet), var(--violet) 6px, #fff 6px, #fff 10px);}
   .yellow .dot{background:repeating-linear-gradient(90deg, var(--yellow), var(--yellow) 6px, #fff 6px, #fff 10px);}
   .green .dot{background:radial-gradient(circle at 6px 6px, var(--green) 4px, transparent 5px), var(--green);}
-  .orange .dot{background:repeating-linear-gradient(45deg, var(--orange) 0px, var(--orange) 3px, #fff 3px, #fff 6px, var(--orange) 6px, var(--orange) 9px, #fff 9px, #fff 12px);}
+  .red .dot{background:repeating-conic-gradient(var(--red) 0deg 90deg, #fff 90deg 180deg, var(--red) 180deg 270deg, #fff 270deg 360deg);}
   .swatch.active{outline:3px solid currentColor; outline-offset:2px; background:#f0f9ff}
   
   .card{
@@ -87,7 +87,7 @@
   }
   .bar span{
     display:block; height:100%; width:0; 
-    background:linear-gradient(90deg, var(--blue), var(--purple), var(--yellow), var(--green), var(--orange)); 
+    background:linear-gradient(90deg, var(--blue), var(--violet), var(--yellow), var(--green), var(--red)); 
     transition:width .4s ease; border-radius:999px;
   }
   .progressText{font-size:14px; opacity:.8; text-align:center}
@@ -140,10 +140,11 @@
     background:#f3f4f6; cursor:pointer; font-size:16px; transition:all 0.2s;
     font-weight:500;
   }
-  .choice:hover:not(.correct):not(.wrong){background:#e5e7eb; transform:translateY(-1px)}
+  .choice:hover:not(.correct):not(.wrong):not([disabled]){background:#e5e7eb; transform:translateY(-1px)}
   .choice.correct{border-color:var(--green); background:#ecfdf5; color:var(--success)}
   .choice.wrong{border-color:var(--error); background:#fef2f2; color:var(--error)}
-  .choice:active{transform:scale(.97)}
+  .choice:active:not([disabled]){transform:scale(.97)}
+  .choice[disabled]{opacity:0.6; cursor:not-allowed; pointer-events:none}
   
   .speakBtn{
     border:1px solid var(--line); background:#fff; border-radius:10px; 
@@ -219,7 +220,7 @@
   <div class="legend" style="background:#e0f2fe; border-color:#0ea5e9;">
     <strong>📖 How It Works:</strong> You solve ONE logic problem at a time. The problem is broken into steps. 
     For each step: (1) Click a COLOR on the left, (2) Answer the question that appears. 
-    Follow the colors in order: 🟦 Blue → 🟪 Purple → 🟨 Yellow → 🟩 Green → 🟧 Orange
+    Follow the colors in order: 🔵 Blue → 🟣 Violet → 🟡 Yellow → 🟢 Green → 🔴 Red
   </div>
 
   <div class="problemSelector" style="max-width:1200px; margin:0 auto 16px">
@@ -240,24 +241,19 @@
     <!-- COLOR RAIL -->
     <div class="rail" id="rail">
       <div class="swatch blue" data-color="BLUE" role="button" tabindex="0" aria-label="Blue: Group phase">
-        <div class="dot" aria-hidden="true"></div>
-        <span>🟦 Group</span>
+        <span>🔵 Group</span>
       </div>
-      <div class="swatch purple" data-color="PURPLE" role="button" tabindex="0" aria-label="Purple: Atom phase">
-        <div class="dot" aria-hidden="true"></div>
-        <span>🟪 Atom</span>
+      <div class="swatch violet" data-color="VIOLET" role="button" tabindex="0" aria-label="Violet: Atom phase">
+        <span>🟣 Atom</span>
       </div>
       <div class="swatch yellow" data-color="YELLOW" role="button" tabindex="0" aria-label="Yellow: Simplify phase">
-        <div class="dot" aria-hidden="true"></div>
-        <span>🟨 Simplify</span>
+        <span>🟡 Simplify</span>
       </div>
       <div class="swatch green" data-color="GREEN" role="button" tabindex="0" aria-label="Green: Combine phase">
-        <div class="dot" aria-hidden="true"></div>
-        <span>🟩 Combine</span>
+        <span>🟢 Combine</span>
       </div>
-      <div class="swatch orange" data-color="ORANGE" role="button" tabindex="0" aria-label="Orange: Final Answer phase">
-        <div class="dot" aria-hidden="true"></div>
-        <span>🟧 Final Answer</span>
+      <div class="swatch red" data-color="RED" role="button" tabindex="0" aria-label="Red: Final Answer phase">
+        <span>🔴 Final Answer</span>
       </div>
     </div>
 
@@ -280,10 +276,10 @@ function speak(text){
 }
 
 document.getElementById('speakLegend').onclick = () =>
-  speak("Blue group. Purple atom. Yellow simplify. Green combine. Orange final answer.");
+  speak("Blue group. Violet atom. Yellow simplify. Green combine. Red final answer.");
 
 /* ===== Problem Definitions ===== */
-const BLUE="BLUE", PURPLE="PURPLE", YELLOW="YELLOW", GREEN="GREEN", ORANGE="ORANGE";
+const BLUE="BLUE", VIOLET="VIOLET", YELLOW="YELLOW", GREEN="GREEN", RED="RED";
 
 const problems = {
   P1: {
@@ -311,9 +307,9 @@ const problems = {
       { color:BLUE, target:"scopeRight", cue:"Blue: group right.",
         question:"Which part is the RIGHT group?",
         choices:["(¬P ∨ ¬Q)","¬(P ∧ Q)","P ∧ Q","→"], correct:0, explain:"Right side is (¬P ∨ ¬Q)." },
-      { color:PURPLE, target:"atomP", cue:"Purple: evaluate P.",
+      { color:VIOLET, target:"atomP", cue:"Violet: evaluate P.",
         question:"What is P?", choices:["True","False"], correct:0, explain:"Assignment says P = True." },
-      { color:PURPLE, target:"atomQ", cue:"Purple: evaluate Q.",
+      { color:VIOLET, target:"atomQ", cue:"Violet: evaluate Q.",
         question:"What is Q?", choices:["True","False"], correct:1, explain:"Assignment says Q = False." },
       { color:YELLOW, target:"simpAnd", cue:"Yellow: evaluate (P ∧ Q).",
         question:"Evaluate (P ∧ Q):", choices:["True","False"], correct:1, explain:"T ∧ F = F." },
@@ -327,7 +323,7 @@ const problems = {
         question:"Right side (¬P ∨ ¬Q) equals:", choices:["True","False"], correct:0, explain:"F ∨ T = T." },
       { color:GREEN, target:"combineImpl", cue:"Green: evaluate the implication.",
         question:"Evaluate: [¬(P ∧ Q)] → [(¬P ∨ ¬Q)]", choices:["True","False"], correct:0, explain:"T → T = T." },
-      { color:ORANGE, target:"finish", cue:"Orange: finished.",
+      { color:RED, target:"finish", cue:"Red: finished.",
         question:"Overall formula is:", choices:["True","False"], correct:0, explain:"The statement is True." }
     ]
   },
@@ -343,13 +339,13 @@ const problems = {
       {id:"finish", label:"finish"}
     ],
     steps:[
-      { color:PURPLE, target:"atomP", cue:"Step 1: Evaluate P. What is P?",
+      { color:VIOLET, target:"atomP", cue:"Step 1: Evaluate P. What is P?",
         question:"What is P?", choices:["True","False"], correct:0, explain:"P = True." },
-      { color:PURPLE, target:"atomQ", cue:"Purple: evaluate Q.",
+      { color:VIOLET, target:"atomQ", cue:"Violet: evaluate Q.",
         question:"What is Q?", choices:["True","False"], correct:0, explain:"Q = True." },
       { color:GREEN, target:"combine", cue:"Step 3: Combine P and Q. Evaluate P ∧ Q:",
         question:"Evaluate P ∧ Q:", choices:["True","False"], correct:0, explain:"T ∧ T = T." },
-      { color:ORANGE, target:"finish", cue:"Orange: finished.",
+      { color:RED, target:"finish", cue:"Red: finished.",
         question:"Final answer:", choices:["True","False"], correct:0, explain:"The formula is True." }
     ]
   },
@@ -366,15 +362,15 @@ const problems = {
       {id:"finish", label:"finish"}
     ],
     steps:[
-      { color:PURPLE, target:"atomP", cue:"Purple: evaluate P.",
+      { color:VIOLET, target:"atomP", cue:"Violet: evaluate P.",
         question:"What is P?", choices:["True","False"], correct:1, explain:"P = False." },
-      { color:PURPLE, target:"atomQ", cue:"Purple: evaluate Q.",
+      { color:VIOLET, target:"atomQ", cue:"Violet: evaluate Q.",
         question:"What is Q?", choices:["True","False"], correct:0, explain:"Q = True." },
       { color:YELLOW, target:"simpNotP", cue:"Yellow: not P.",
         question:"Compute ¬P:", choices:["True","False"], correct:0, explain:"¬F = T." },
       { color:GREEN, target:"combine", cue:"Green: combine with or.",
         question:"Evaluate ¬P ∨ Q:", choices:["True","False"], correct:0, explain:"T ∨ T = T." },
-      { color:ORANGE, target:"finish", cue:"Orange: finished.",
+      { color:RED, target:"finish", cue:"Red: finished.",
         question:"Final answer:", choices:["True","False"], correct:0, explain:"The formula is True." }
     ]
   }
@@ -393,10 +389,10 @@ let stepStats = [];
 
 /* ===== Utilities ===== */
 function cssColor(c){
-  return {BLUE:"var(--blue)", PURPLE:"var(--purple)", YELLOW:"var(--yellow)", GREEN:"var(--green)", ORANGE:"var(--orange)"}[c] || "#000";
+  return {BLUE:"var(--blue)", VIOLET:"var(--violet)", YELLOW:"var(--yellow)", GREEN:"var(--green)", RED:"var(--red)"}[c] || "#000";
 }
 function colorName(c){
-  return {BLUE:"🟦 Group", PURPLE:"🟪 Atom", YELLOW:"🟨 Simplify", GREEN:"🟩 Combine", ORANGE:"🟧 Final Answer"}[c]||c;
+  return {BLUE:"🔵 Group", VIOLET:"🟣 Atom", YELLOW:"🟡 Simplify", GREEN:"🟢 Combine", RED:"🔴 Final Answer"}[c]||c;
 }
 function targetLabelById(id){
   const t = currentProblem.targets.find(x=>x.id===id);
@@ -502,6 +498,8 @@ function onColorSelected(color){
     routeMisclicks++;
     stepStats[index].routeMis++;
     const expectedColor = colorName(step.color).split(' ')[1];
+    // Hide MC panel if visible from previous step
+    document.getElementById("mc").style.display = "none";
     setLog(`That's not the right color. You need ${colorName(step.color)} for this step.`, "bad");
     pulseRail(step.color);
     speak(`You selected the wrong color. You need ${expectedColor} for this step.`);
@@ -536,9 +534,14 @@ function showMC(step){
     c.textContent = ch;
     c.setAttribute("aria-label", `Option ${i+1}: ${ch}`);
     c.addEventListener("click", ()=>{
+      // Prevent multiple clicks if already processing
+      if(c.classList.contains("correct") || c.classList.contains("wrong")) return;
+      
       const isCorrect = i===step.correct;
       if(isCorrect){
         c.classList.add("correct");
+        // Disable all choices to prevent further clicks
+        document.querySelectorAll("#choices .choice").forEach(btn => btn.disabled = true);
         setTimeout(()=>{ panel.style.display="none"; acceptStep(); }, 300);
       }else{
         mcMisclicks++;
@@ -562,7 +565,7 @@ function acceptStep(){
   if(index>=currentProblem.steps.length){
     showSummary();
     speak("Congratulations! You finished the problem. Great job!");
-    pulseRail(ORANGE);
+    pulseRail(RED);
     return;
   }
   const next = currentProblem.steps[index];
