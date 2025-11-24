@@ -9,11 +9,11 @@ Students with dyslexia face barriers learning discrete mathematics: reading-inte
 ### Core Concept
 
 ColorPath guides students through logical formulas using a color-coded sequence:
-- **🟦 Blue (Group)**: Identify scope, parentheses, clauses
-- **🟪 Purple (Atom)**: Evaluate atomic propositions (P, Q, R, etc.)
-- **🟨 Yellow (Simplify)**: Apply negation, identities, De Morgan's laws
-- **🟩 Green (Combine)**: Combine sub-expressions using connectives (∧, ∨, →, ↔)
-- **🟧 Orange (Finish)**: Finalize solution and verify correctness
+- **🟢 Green (Group)**: Identify scope, parentheses, clauses
+- **🟣 Violet (Atom)**: Evaluate atomic propositions (P, Q, R, etc.)
+- **🟡 Yellow (Simplify)**: Apply negation, identities, De Morgan's laws
+- **🔵 Blue (Combine)**: Combine sub-expressions using connectives (∧, ∨, →, ↔)
+- **🔴 Red (Final Answer)**: Finalize solution and verify correctness
 
 ### User Flow
 
@@ -26,15 +26,16 @@ ColorPath guides students through logical formulas using a color-coded sequence:
 ### Design Principles
 
 - Visual-first: Colors and icons replace text
-- Progressive disclosure: Hints appear when needed
+- Progressive disclosure: Hints appear when needed (user-controlled)
 - Non-punitive: Errors are learning opportunities
 - Accessible: Text-to-speech, high contrast, clear typography
+- User control: Optional auto-hints with manual hint button for on-demand assistance
 
 ## 3. Visual Design
 
 **Layout**: Two-column (color rail left, problem area right). Color rail shows five swatches with color dots, emoji icons, and labels. Problem area shows formula, progress bar, questions, and feedback.
 
-**Colors**: Blue (#2563eb), Purple (#7c3aed), Yellow (#ca8a04), Green (#16a34a), Orange (#f97316). Patterns/textures for colorblind accessibility.
+**Colors**: Green (#22c55e), Violet (#8b5cf6), Yellow (#fde047), Blue (#60a5fa), Red (#ef4444). Patterns/textures for colorblind accessibility. Colors are bright and distinct to improve visibility and reduce confusion.
 
 **Typography**: 18px base font, 1.6 line height, 0.2px letter spacing. Formula display: 24px monospace.
 
@@ -54,7 +55,7 @@ Single-page web application using vanilla HTML, CSS, and JavaScript. No external
   formula: string,
   assignment: string,
   steps: [{
-    color: string,        // BLUE | PURPLE | YELLOW | GREEN | ORANGE
+    color: string,        // GREEN | VIOLET | YELLOW | BLUE | RED
     question: string,
     choices: [string],
     correct: number,
@@ -87,9 +88,11 @@ Single-page web application using vanilla HTML, CSS, and JavaScript. No external
 - If correct: mark green, advance to next step after 300ms
 - If wrong: mark red, show hint, allow retry
 
-**Idle Detection**:
-- Timer: 6000ms
-- On expiry: show hint, speak step cue, highlight correct color
+**Idle Detection (Optional)**:
+- Timer: 6000ms (only active if auto-hints enabled)
+- User can toggle auto-hints on/off via topbar control
+- Manual "Get Hint" button available for on-demand assistance
+- On expiry (if enabled): show hint, speak step cue, highlight correct color
 
 **Progress Calculation**:
 - progressPercentage = (currentStepIndex / totalSteps) * 100
@@ -113,7 +116,7 @@ Uses Web Speech API (`window.speechSynthesis`):
 
 ## 5. User Experience Flow
 
-**Initial Load**: Problem displays with formula, assignments, color rail. First step hint appears.
+**Initial Load**: Problem displays with formula, assignments, color rail. User can enable auto-hints or use manual hint button as needed.
 
 **Solving a Step**:
 1. Click color swatch → System validates

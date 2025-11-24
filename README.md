@@ -4,7 +4,7 @@
 
 ## Overview
 
-ColorPath helps students with dyslexia learn propositional logic using a color-sequenced workflow instead of text-heavy interfaces. Students follow colors (Blue → Purple → Yellow → Green → Orange) to solve logic problems step-by-step.
+ColorPath helps students with dyslexia learn propositional logic using a color-sequenced workflow instead of text-heavy interfaces. Students follow colors (Green → Violet → Yellow → Blue → Red) to solve logic problems step-by-step.
 
 ## How It Helps Dyslexic Students
 
@@ -29,15 +29,15 @@ Single-page web application using vanilla HTML5, CSS3, and JavaScript (ES6+) wit
 1. Open `index.html` in a modern browser
 2. Select a problem from the dropdown
 3. Click a color → Answer the question
-4. Follow the color sequence: 🟦 Blue → 🟪 Purple → 🟨 Yellow → 🟩 Green → 🟧 Orange
+4. Follow the color sequence: 🟢 Green → 🟣 Violet → 🟡 Yellow → 🔵 Blue → 🔴 Red
 
 ## Color System
 
-- **🟦 Blue (Group)**: Identify scope, parentheses, clauses
-- **🟪 Purple (Atom)**: Evaluate atomic propositions (P, Q, R, etc.)
-- **🟨 Yellow (Simplify)**: Apply negation, identities, De Morgan's laws
-- **🟩 Green (Combine)**: Combine sub-expressions using connectives (∧, ∨, →, ↔)
-- **🟧 Orange (Finish)**: Finalize solution and verify correctness
+- **🟢 Green (Group)**: Identify scope, parentheses, clauses
+- **🟣 Violet (Atom)**: Evaluate atomic propositions (P, Q, R, etc.)
+- **🟡 Yellow (Simplify)**: Apply negation, identities, De Morgan's laws
+- **🔵 Blue (Combine)**: Combine sub-expressions using connectives (∧, ∨, →, ↔)
+- **🔴 Red (Final Answer)**: Finalize solution and verify correctness
 
 ## Research Questions
 

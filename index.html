@@ -7,7 +7,7 @@
 <meta name="description" content="A visual-first learning tool for dyslexic students learning propositional logic and truth tables" />
 <style>
   :root{
-    --blue:#2563eb;   --violet:#8b5cf6; --yellow:#fde047; --green:#22c55e; --red:#ef4444;
+    --blue:#22c55e;   --violet:#8b5cf6; --yellow:#fde047; --green:#60a5fa; --red:#ef4444;
     --paper:#fbf7ef;  --paper-off:#f3f4f6; --ink:#111827; --card:#ffffff; --line:#e5e7eb;
     --error:#dc2626;  --success:#065f46;   --hint:#fbbf24;
   }
@@ -87,7 +87,7 @@
   }
   .bar span{
     display:block; height:100%; width:0; 
-    background:linear-gradient(90deg, var(--blue), var(--violet), var(--yellow), var(--green), var(--red)); 
+    background:linear-gradient(90deg, var(--green), var(--violet), var(--yellow), var(--blue), var(--red)); 
     transition:width .4s ease; border-radius:999px;
   }
   .progressText{font-size:14px; opacity:.8; text-align:center}
@@ -220,7 +220,7 @@
   <div class="legend" style="background:#e0f2fe; border-color:#0ea5e9;">
     <strong>📖 How It Works:</strong> You solve ONE logic problem at a time. The problem is broken into steps. 
     For each step: (1) Click a COLOR on the left, (2) Answer the question that appears. 
-    Follow the colors in order: 🔵 Blue → 🟣 Violet → 🟡 Yellow → 🟢 Green → 🔴 Red
+    Follow the colors in order: 🟢 Green → 🟣 Violet → 🟡 Yellow → 🔵 Blue → 🔴 Red
   </div>
 
   <div class="problemSelector" style="max-width:1200px; margin:0 auto 16px">
@@ -240,8 +240,8 @@
   <div class="wrap">
     <!-- COLOR RAIL -->
     <div class="rail" id="rail">
-      <div class="swatch blue" data-color="BLUE" role="button" tabindex="0" aria-label="Blue: Group phase">
-        <span>🔵 Group</span>
+      <div class="swatch green" data-color="GREEN" role="button" tabindex="0" aria-label="Green: Group phase">
+        <span>🟢 Group</span>
       </div>
       <div class="swatch violet" data-color="VIOLET" role="button" tabindex="0" aria-label="Violet: Atom phase">
         <span>🟣 Atom</span>
@@ -249,8 +249,8 @@
       <div class="swatch yellow" data-color="YELLOW" role="button" tabindex="0" aria-label="Yellow: Simplify phase">
         <span>🟡 Simplify</span>
       </div>
-      <div class="swatch green" data-color="GREEN" role="button" tabindex="0" aria-label="Green: Combine phase">
-        <span>🟢 Combine</span>
+      <div class="swatch blue" data-color="BLUE" role="button" tabindex="0" aria-label="Blue: Combine phase">
+        <span>🔵 Combine</span>
       </div>
       <div class="swatch red" data-color="RED" role="button" tabindex="0" aria-label="Red: Final Answer phase">
         <span>🔴 Final Answer</span>
@@ -276,7 +276,7 @@ function speak(text){
 }
 
 document.getElementById('speakLegend').onclick = () =>
-  speak("Blue group. Violet atom. Yellow simplify. Green combine. Red final answer.");
+  speak("Green group. Violet atom. Yellow simplify. Blue combine. Red final answer.");
 
 /* ===== Problem Definitions ===== */
 const BLUE="BLUE", VIOLET="VIOLET", YELLOW="YELLOW", GREEN="GREEN", RED="RED";
@@ -301,10 +301,10 @@ const problems = {
       {id:"finish",     label:"finish"}
     ],
     steps:[
-      { color:BLUE, target:"scopeLeft",  cue:"Blue: group left.",
+      { color:GREEN, target:"scopeLeft",  cue:"Green: group left.",
         question:"Which part is the LEFT group?",
         choices:["¬(P ∧ Q)","(¬P ∨ ¬Q)","P","Q"], correct:0, explain:"Left side is ¬(P ∧ Q)." },
-      { color:BLUE, target:"scopeRight", cue:"Blue: group right.",
+      { color:GREEN, target:"scopeRight", cue:"Green: group right.",
         question:"Which part is the RIGHT group?",
         choices:["(¬P ∨ ¬Q)","¬(P ∧ Q)","P ∧ Q","→"], correct:0, explain:"Right side is (¬P ∨ ¬Q)." },
       { color:VIOLET, target:"atomP", cue:"Violet: evaluate P.",
@@ -319,9 +319,9 @@ const problems = {
         question:"Compute ¬P:", choices:["True","False"], correct:1, explain:"¬T = F." },
       { color:YELLOW, target:"simpNotQ", cue:"Yellow: not Q.",
         question:"Compute ¬Q:", choices:["True","False"], correct:0, explain:"¬F = T." },
-      { color:GREEN, target:"combineRight", cue:"Green: combine with or.",
+      { color:BLUE, target:"combineRight", cue:"Blue: combine with or.",
         question:"Right side (¬P ∨ ¬Q) equals:", choices:["True","False"], correct:0, explain:"F ∨ T = T." },
-      { color:GREEN, target:"combineImpl", cue:"Green: evaluate the implication.",
+      { color:BLUE, target:"combineImpl", cue:"Blue: evaluate the implication.",
         question:"Evaluate: [¬(P ∧ Q)] → [(¬P ∨ ¬Q)]", choices:["True","False"], correct:0, explain:"T → T = T." },
       { color:RED, target:"finish", cue:"Red: finished.",
         question:"Overall formula is:", choices:["True","False"], correct:0, explain:"The statement is True." }
@@ -343,7 +343,7 @@ const problems = {
         question:"What is P?", choices:["True","False"], correct:0, explain:"P = True." },
       { color:VIOLET, target:"atomQ", cue:"Violet: evaluate Q.",
         question:"What is Q?", choices:["True","False"], correct:0, explain:"Q = True." },
-      { color:GREEN, target:"combine", cue:"Step 3: Combine P and Q. Evaluate P ∧ Q:",
+      { color:BLUE, target:"combine", cue:"Step 3: Combine P and Q. Evaluate P ∧ Q:",
         question:"Evaluate P ∧ Q:", choices:["True","False"], correct:0, explain:"T ∧ T = T." },
       { color:RED, target:"finish", cue:"Red: finished.",
         question:"Final answer:", choices:["True","False"], correct:0, explain:"The formula is True." }
@@ -368,7 +368,7 @@ const problems = {
         question:"What is Q?", choices:["True","False"], correct:0, explain:"Q = True." },
       { color:YELLOW, target:"simpNotP", cue:"Yellow: not P.",
         question:"Compute ¬P:", choices:["True","False"], correct:0, explain:"¬F = T." },
-      { color:GREEN, target:"combine", cue:"Green: combine with or.",
+      { color:BLUE, target:"combine", cue:"Blue: combine with or.",
         question:"Evaluate ¬P ∨ Q:", choices:["True","False"], correct:0, explain:"T ∨ T = T." },
       { color:RED, target:"finish", cue:"Red: finished.",
         question:"Final answer:", choices:["True","False"], correct:0, explain:"The formula is True." }
@@ -392,7 +392,7 @@ function cssColor(c){
   return {BLUE:"var(--blue)", VIOLET:"var(--violet)", YELLOW:"var(--yellow)", GREEN:"var(--green)", RED:"var(--red)"}[c] || "#000";
 }
 function colorName(c){
-  return {BLUE:"🔵 Group", VIOLET:"🟣 Atom", YELLOW:"🟡 Simplify", GREEN:"🟢 Combine", RED:"🔴 Final Answer"}[c]||c;
+  return {GREEN:"🟢 Group", VIOLET:"🟣 Atom", YELLOW:"🟡 Simplify", BLUE:"🔵 Combine", RED:"🔴 Final Answer"}[c]||c;
 }
 function targetLabelById(id){
   const t = currentProblem.targets.find(x=>x.id===id);
