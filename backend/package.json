@@ -1,7 +1,7 @@
 {
-  "name": "colorpath-backend",
+  "name": "tracewise-backend",
   "version": "2.0.0",
-  "description": "ColorPath adaptive learning platform backend",
+  "description": "TraceWise adaptive learning platform backend",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",

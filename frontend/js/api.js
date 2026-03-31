@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * ColorPath API Client
+ * TraceWise API Client
  * Handles auth tokens, request queuing, event batching, and all HTTP calls.
  * Used by both student app (index.html) and teacher dashboard (dashboard.html).
  */
@@ -226,6 +226,20 @@ class ApiClient {
     } catch (err) {
       console.warn('[API] Hint request failed:', err.message);
       return { hint: stepExplain || 'Review the step carefully and try again.', source: 'static' };
+    }
+  }
+
+  // ─── Explain API ───────────────────────────────────────────────────────────
+
+  /**
+   * Request an AI-generated plain-English explanation of a code snippet.
+   */
+  async explainCode(formula, title) {
+    try {
+      return await this.post('/api/explain', { formula, title });
+    } catch (err) {
+      console.warn('[API] Explain request failed:', err.message);
+      return { explanation: 'Read the code one line at a time — each line does one thing.', source: 'static' };
     }
   }
 

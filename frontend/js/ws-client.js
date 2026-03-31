@@ -1,6 +1,6 @@
 'use strict';
 /**
- * ColorPath WebSocket Client with reconnect
+ * TraceWise WebSocket Client with reconnect
  * Used by the teacher dashboard (dashboard.html) only.
  */
 class WsClient {
