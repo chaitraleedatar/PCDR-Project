@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>ColorPath — Teacher Dashboard</title>
+<title>TraceWise — Teacher Dashboard</title>
 <script src="/js/api.js"></script>
 <script src="/js/auth-modal.js"></script>
 <script src="/js/ws-client.js"></script>
@@ -128,8 +128,8 @@ h3{font-size:15px;font-weight:600;margin-bottom:10px;}
 <!-- Top bar -->
 <div class="topbar">
   <div class="topbar-left">
-    <div style="font-size:24px;">🎨</div>
-    <h1>ColorPath Dashboard</h1>
+    <div style="font-size:24px;">🎯</div>
+    <h1>Trace<span style="color:#60a5fa;">Wise</span> Dashboard</h1>
     <span id="wsBadge" class="ws-badge connecting">⟳ Connecting...</span>
   </div>
   <div id="userChipDash" class="user-chip"></div>
@@ -252,7 +252,6 @@ let heatmapInterval = null;
 // ─── Auth check ───────────────────────────────────────────────────────────────
 window.addEventListener('cp:logged-in', async () => {
   if (!api.user || (api.user.role !== 'teacher' && api.user.role !== 'admin')) {
-    alert('You need a teacher or admin account to access the dashboard.\n\nRedirecting to student app...');
     window.location.href = '/';
     return;
   }

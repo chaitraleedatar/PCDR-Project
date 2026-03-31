@@ -10,9 +10,9 @@ const server = http.createServer(app);
 initWsServer(server);
 
 server.listen(PORT, () => {
-  console.log(`[ColorPath] Server running on http://localhost:${PORT}`);
-  console.log(`[ColorPath] API: http://localhost:${PORT}/api`);
-  console.log(`[ColorPath] WebSocket: ws://localhost:${PORT}/ws`);
+  console.log(`[TraceWise] Server running on http://localhost:${PORT}`);
+  console.log(`[TraceWise] API: http://localhost:${PORT}/api`);
+  console.log(`[TraceWise] WebSocket: ws://localhost:${PORT}/ws`);
 });
 
 server.on('error', (err) => {
