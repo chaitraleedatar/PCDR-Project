@@ -1,4 +1,4 @@
--- TraceWise v2 Database Schema
+-- ColorPath v2 Database Schema
 -- Run via docker-entrypoint-initdb.d (auto-applied on first container start)
 
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";

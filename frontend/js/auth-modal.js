@@ -1,6 +1,6 @@
 'use strict';
 /**
- * TraceWise Auth Modal
+ * ColorPath Auth Modal
  * Handles the login/register overlay shown before the student app loads.
  * Calls window.api (api.js must be loaded first).
  * Fires 'cp:logged-in' custom event when auth succeeds.
@@ -21,9 +21,9 @@
         margin:16px;
       ">
         <div style="text-align:center; margin-bottom:28px;">
-          <div style="font-size:40px; margin-bottom:8px;">🎯</div>
-          <h1 style="margin:0 0 4px; font-size:26px; font-weight:800; color:#0f172a; letter-spacing:-0.5px;">Trace<span style="color:#4f46e5;">Wise</span></h1>
-          <p style="margin:0; color:#64748b; font-size:14px;">Adaptive Code Learning for Everyone</p>
+          <div style="font-size:40px; margin-bottom:8px;">🎨</div>
+          <h1 style="margin:0 0 4px; font-size:24px; font-weight:700; color:#111827;">ColorPath</h1>
+          <p style="margin:0; color:#6b7280; font-size:14px;">Adaptive Logic Learning Platform</p>
         </div>
 
         <!-- Tab buttons -->
@@ -64,7 +64,7 @@
             Sign In →
           </button>
           <p style="text-align:center; margin-top:12px; font-size:13px; color:#6b7280;">
-            Demo: <strong>student@tracewise.edu</strong> / <strong>password</strong>
+            Demo: <strong>student@colorpath.edu</strong> / <strong>password</strong>
           </p>
         </form>
 

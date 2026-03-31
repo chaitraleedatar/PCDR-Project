@@ -15,7 +15,6 @@ const hintRoutes      = require('./routes/hints');
 const dashboardRoutes = require('./routes/dashboard');
 const exportRoutes    = require('./routes/export');
 const masteryRoutes   = require('./routes/mastery');
-const explainRoutes   = require('./routes/explain');
 
 const app = express();
 
@@ -52,7 +51,6 @@ app.use('/api/hints',     hintRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/export',    exportRoutes);
 app.use('/api/mastery',   masteryRoutes);
-app.use('/api/explain',   explainRoutes);
 
 // SPA fallback for dashboard route
 app.get('/dashboard', (req, res) => {

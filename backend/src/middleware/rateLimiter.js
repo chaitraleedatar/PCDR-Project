@@ -15,10 +15,4 @@ const hintLimiter = rateLimit({
   message: { error: 'too_many_hints', retryAfter: 60 },
 });
 
-const explainLimiter = rateLimit({
-  windowMs: 60 * 1000, // 1 minute
-  max: 20,
-  message: { error: 'too_many_explain_requests', retryAfter: 60 },
-});
-
-module.exports = { authLimiter, hintLimiter, explainLimiter };
+module.exports = { authLimiter, hintLimiter };

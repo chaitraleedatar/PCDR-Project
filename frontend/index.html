@@ -3,1251 +3,288 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>TraceWise — Accessible Code Learning</title>
-<meta name="description" content="Step-by-step adaptive code tracing for dyslexic CS students. Color-coded, AI-assisted, accessible." />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lexend:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<title>ColorPath — Adaptive Logic Learning</title>
+<meta name="description" content="A visual-first adaptive learning tool for dyslexic students learning propositional logic" />
 <script src="/js/api.js"></script>
 <script src="/js/auth-modal.js"></script>
 <style>
-/* =============================================
-   DESIGN TOKENS
-   ============================================= */
-:root {
-  /* Brand */
-  --brand: #4f46e5;
-  --brand-dark: #3730a3;
-  --brand-light: #eef2ff;
-  --brand-border: #c7d2fe;
-
-  /* Step colors */
-  --c-green:  #059669;
-  --c-violet: #7c3aed;
-  --c-yellow: #b45309;
-  --c-blue:   #1d4ed8;
-  --c-red:    #b91c1c;
-
-  --c-green-bg:  #ecfdf5;
-  --c-violet-bg: #f5f3ff;
-  --c-yellow-bg: #fffbeb;
-  --c-blue-bg:   #eff6ff;
-  --c-red-bg:    #fef2f2;
-
-  /* Surface */
-  --bg: #f5f7ff;
-  --card: #ffffff;
-  --border: #e2e8f0;
-  --border-strong: #cbd5e1;
-
-  /* Text */
-  --ink: #0f172a;
-  --ink-mid: #475569;
-  --ink-soft: #94a3b8;
-
-  /* Feedback */
-  --ok: #15803d;
-  --ok-bg: #f0fdf4;
-  --ok-border: #86efac;
-  --err: #b91c1c;
-  --err-bg: #fef2f2;
-  --err-border: #fca5a5;
-  --info: #1e40af;
-  --info-bg: #eff6ff;
-  --info-border: #bfdbfe;
-
-  /* Typography — Normal mode */
-  --font: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-size: 16px;
-  --line-height: 1.65;
-  --letter-spacing: 0;
-
-  /* Spacing */
-  --radius: 14px;
-  --radius-sm: 8px;
-  --radius-lg: 20px;
-  --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04);
-  --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
-}
-
-/* =============================================
-   DYSLEXIA MODE — dramatically different
-   ============================================= */
-body.dyslexia-mode {
-  --bg: #fdf9f0;
-  --card: #fffdf6;
-  --border: #d4c9a8;
-  --border-strong: #b8a87a;
-  --ink: #1a1005;
-  --ink-mid: #3d3118;
-  --font: 'Lexend', 'Comic Sans MS', sans-serif;
-  --font-size: 21px;
-  --line-height: 2.0;
-  --letter-spacing: 0.04em;
-  background: var(--bg);
-  font-size: var(--font-size);
-  line-height: var(--line-height);
-  letter-spacing: var(--letter-spacing);
-  word-spacing: 0.12em;
-}
-
-body.dyslexia-mode .code-block {
-  font-size: 19px !important;
-  line-height: 2.3 !important;
-  letter-spacing: 0.06em !important;
-  background: #1a1a2e !important;
-  padding: 24px 28px !important;
-}
-
-body.dyslexia-mode .swatch {
-  padding: 18px 20px !important;
-  font-size: 19px !important;
-  border-width: 3px !important;
-}
-
-body.dyslexia-mode .choice {
-  padding: 18px 28px !important;
-  font-size: 20px !important;
-  border-width: 3px !important;
-  min-width: 100px !important;
-}
-
-body.dyslexia-mode .mc-question {
-  font-size: 24px !important;
-  line-height: 1.6 !important;
-}
-
-body.dyslexia-mode .log {
-  font-size: 19px !important;
-  padding: 16px 22px !important;
-}
-
-body.dyslexia-mode .hint {
-  font-size: 19px !important;
-  padding: 18px 22px !important;
-  line-height: 1.9 !important;
-}
-
-body.dyslexia-mode .problemTitle {
-  font-size: 26px !important;
-}
-
-body.dyslexia-mode .nav-tab {
-  font-size: 17px !important;
-  padding: 12px 22px !important;
-}
-
-body.dyslexia-mode .assignment {
-  font-size: 18px !important;
-  line-height: 1.8 !important;
-}
-
-body.dyslexia-mode .mode-banner {
-  display: flex !important;
-}
-
-/* =============================================
-   BASE RESET & BODY
-   ============================================= */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-  font-family: var(--font);
-  font-size: var(--font-size);
-  line-height: var(--line-height);
-  letter-spacing: var(--letter-spacing);
-  background: var(--bg);
-  color: var(--ink);
-  min-height: 100vh;
-  transition: background 0.3s, font-size 0.3s, line-height 0.3s;
-}
-
-/* =============================================
-   NAVIGATION HEADER
-   ============================================= */
-.nav {
-  background: var(--card);
-  border-bottom: 1px solid var(--border);
-  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-.nav-inner {
-  max-width: 1140px;
-  margin: 0 auto;
-  padding: 0 20px;
-  display: flex;
-  align-items: center;
-  gap: 0;
-  height: 64px;
-}
-
-.nav-brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  text-decoration: none;
-  margin-right: 32px;
-  flex-shrink: 0;
-}
-
-.nav-brand-icon {
-  width: 36px;
-  height: 36px;
-  background: linear-gradient(135deg, var(--brand) 0%, #7c3aed 100%);
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  flex-shrink: 0;
-}
-
-.nav-brand-name {
-  font-size: 22px;
-  font-weight: 800;
-  color: var(--ink);
-  letter-spacing: -0.5px;
-}
-
-.nav-brand-name span {
-  color: var(--brand);
-}
-
-.nav-tabs {
-  display: flex;
-  gap: 4px;
-  flex: 1;
-}
-
-.nav-tab {
-  padding: 8px 18px;
-  border-radius: 8px;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  border: none;
-  background: transparent;
-  color: var(--ink-mid);
-  transition: all 0.15s;
-  white-space: nowrap;
-}
-
-.nav-tab:hover { background: var(--brand-light); color: var(--brand); }
-.nav-tab.active { background: var(--brand-light); color: var(--brand); }
-
-.nav-right {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-shrink: 0;
-  margin-left: auto;
-}
-
-/* Dyslexia toggle — prominent switch */
-.dyslexia-toggle {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: #f8fafc;
-  border: 2px solid var(--border);
-  border-radius: 24px;
-  padding: 6px 14px 6px 8px;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--ink-mid);
-  transition: all 0.2s;
-  user-select: none;
-}
-
-.dyslexia-toggle:hover { border-color: var(--brand); background: var(--brand-light); }
-
-.dyslexia-toggle.on {
-  background: #fffbeb;
-  border-color: #f59e0b;
-  color: #78350f;
-}
-
-/* The pill switch inside the toggle */
-.toggle-switch {
-  width: 40px;
-  height: 22px;
-  background: #cbd5e1;
-  border-radius: 11px;
-  position: relative;
-  transition: background 0.2s;
-  flex-shrink: 0;
-}
-
-.toggle-switch::after {
-  content: '';
-  position: absolute;
-  width: 16px;
-  height: 16px;
-  background: #fff;
-  border-radius: 50%;
-  top: 3px;
-  left: 3px;
-  transition: left 0.2s;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-}
-
-.dyslexia-toggle.on .toggle-switch { background: #f59e0b; }
-.dyslexia-toggle.on .toggle-switch::after { left: 21px; }
-
-.icon-btn {
-  border: 1.5px solid var(--border);
-  background: var(--card);
-  border-radius: 10px;
-  padding: 8px 12px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--ink-mid);
-  transition: all 0.15s;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.icon-btn:hover { background: var(--brand-light); border-color: var(--brand); color: var(--brand); }
-
-/* User chip in nav */
-.user-chip {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--brand-light);
-  border: 1.5px solid var(--brand-border);
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--brand-dark);
-  white-space: nowrap;
-}
-
-.user-chip button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--ink-soft);
-  font-size: 12px;
-  padding: 2px 8px;
-  border-radius: 6px;
-  font-weight: 500;
-}
-
-.user-chip button:hover { background: #e0e7ff; color: var(--brand-dark); }
-
-/* Dyslexia mode active banner */
-.mode-banner {
-  display: none;
-  align-items: center;
-  gap: 12px;
-  background: #fffbeb;
-  border-bottom: 2px solid #fcd34d;
-  padding: 10px 20px;
-  font-size: 15px;
-  font-weight: 600;
-  color: #78350f;
-}
-
-/* =============================================
-   LAYOUT & CONTENT AREA
-   ============================================= */
-.page-content {
-  max-width: 1140px;
-  margin: 0 auto;
-  padding: 28px 20px 48px;
-}
-
-/* Tabs switch views */
-.tab-view { display: none; }
-.tab-view.active { display: block; }
-
-/* =============================================
-   HOW IT WORKS TAB
-   ============================================= */
-.how-section { max-width: 760px; }
-
-.how-section h2 {
-  font-size: 26px;
-  font-weight: 800;
-  margin-bottom: 6px;
-  color: var(--ink);
-}
-
-.how-section .subtitle {
-  font-size: 16px;
-  color: var(--ink-mid);
-  margin-bottom: 32px;
-}
-
-.how-steps { display: flex; flex-direction: column; gap: 16px; margin-bottom: 36px; }
-
-.how-step {
-  display: flex;
-  gap: 20px;
-  align-items: flex-start;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 20px 24px;
-  box-shadow: var(--shadow);
-}
-
-.how-step-num {
-  width: 36px;
-  height: 36px;
-  background: var(--brand);
-  color: #fff;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  font-weight: 800;
-  flex-shrink: 0;
-}
-
-.how-step-text strong { display: block; font-size: 17px; font-weight: 700; margin-bottom: 4px; color: var(--ink); }
-.how-step-text p { font-size: 15px; color: var(--ink-mid); margin: 0; }
-
-.color-legend {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 24px;
-  box-shadow: var(--shadow);
-}
-
-.color-legend h3 { font-size: 17px; font-weight: 700; margin-bottom: 16px; color: var(--ink); }
-
-.color-row {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--border);
-  font-size: 15px;
-}
-
-.color-row:last-child { border-bottom: none; }
-
-.color-dot {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.color-dot.g { background: var(--c-green); }
-.color-dot.v { background: var(--c-violet); }
-.color-dot.y { background: var(--c-yellow); }
-.color-dot.b { background: var(--c-blue); }
-.color-dot.r { background: var(--c-red); }
-
-.color-row strong { font-weight: 700; color: var(--ink); min-width: 90px; }
-.color-row span { color: var(--ink-mid); }
-
-/* =============================================
-   MY PROGRESS TAB
-   ============================================= */
-.profile-grid {
-  display: grid;
-  grid-template-columns: 300px 1fr;
-  gap: 24px;
-  align-items: start;
-}
-
-@media(max-width: 768px) { .profile-grid { grid-template-columns: 1fr; } }
-
-.profile-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 28px 24px;
-  box-shadow: var(--shadow);
-  text-align: center;
-}
-
-.profile-avatar {
-  width: 72px;
-  height: 72px;
-  background: linear-gradient(135deg, var(--brand) 0%, #7c3aed 100%);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 32px;
-  margin: 0 auto 16px;
-  color: #fff;
-}
-
-.profile-name { font-size: 22px; font-weight: 800; color: var(--ink); margin-bottom: 4px; }
-.profile-role { font-size: 14px; color: var(--ink-mid); font-weight: 600; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 20px; }
-
-.profile-stat-row {
-  display: flex;
-  justify-content: space-around;
-  padding: 16px 0;
-  border-top: 1px solid var(--border);
-}
-
-.profile-stat { text-align: center; }
-.profile-stat .val { font-size: 28px; font-weight: 800; color: var(--brand); display: block; }
-.profile-stat .lbl { font-size: 12px; color: var(--ink-soft); font-weight: 600; text-transform: uppercase; letter-spacing: .4px; }
-
-.section-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 24px 28px;
-  box-shadow: var(--shadow);
-  margin-bottom: 20px;
-}
-
-.section-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 16px; color: var(--ink); }
-
-.mastery-item {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 14px;
-  font-size: 15px;
-}
-
-.mastery-item:last-child { margin-bottom: 0; }
-.mastery-item .concept { min-width: 140px; color: var(--ink); font-weight: 600; }
-.mastery-bar { flex: 1; height: 12px; background: #e2e8f0; border-radius: 999px; overflow: hidden; }
-.mastery-fill { height: 100%; border-radius: 999px; transition: width 0.8s ease; }
-.mastery-pct { min-width: 44px; text-align: right; color: var(--ink-mid); font-weight: 700; font-size: 14px; }
-.mastery-label { font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
-
-.no-data { text-align: center; padding: 32px; color: var(--ink-soft); font-size: 15px; }
-
-/* =============================================
-   PROBLEMS TAB (main game)
-   ============================================= */
-.problems-layout {
-  display: grid;
-  grid-template-columns: 220px 1fr;
-  gap: 24px;
-  align-items: start;
-}
-
-@media(max-width: 768px) {
-  .problems-layout { grid-template-columns: 1fr; }
-  .rail { display: flex !important; flex-direction: row !important; flex-wrap: wrap !important; position: static !important; }
-}
-
-/* Problem selector */
-.problem-selector-bar {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 16px 20px;
-  margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
-  box-shadow: var(--shadow);
-}
-
-.problem-selector-bar label { font-weight: 700; font-size: 15px; color: var(--ink); white-space: nowrap; }
-
-.problem-selector-bar select {
-  flex: 1;
-  min-width: 220px;
-  padding: 10px 14px;
-  border: 1.5px solid var(--border);
-  border-radius: 10px;
-  font-size: 15px;
-  cursor: pointer;
-  color: var(--ink);
-  background: var(--card);
-  font-family: var(--font);
-}
-
-.problem-selector-bar select:focus { outline: 2px solid var(--brand); outline-offset: 1px; }
-
-/* Color rail */
-.rail {
-  position: sticky;
-  top: 88px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  height: fit-content;
-}
-
-.rail-label {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .8px;
-  color: var(--ink-soft);
-  padding: 0 4px;
-  margin-bottom: 4px;
-}
-
-.swatch {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: var(--card);
-  border: 2px solid var(--border);
-  border-radius: var(--radius);
-  padding: 14px 16px;
-  cursor: pointer;
-  user-select: none;
-  transition: all 0.15s;
-  font-size: 16px;
-  font-weight: 700;
-}
-
-.swatch:hover { box-shadow: var(--shadow-md); transform: translateX(2px); }
-
-.swatch .dot {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.swatch.green  { color: var(--c-green); }
-.swatch.violet { color: var(--c-violet); }
-.swatch.yellow { color: var(--c-yellow); }
-.swatch.blue   { color: var(--c-blue); }
-.swatch.red    { color: var(--c-red); }
-
-.swatch.green  .dot { background: var(--c-green); }
-.swatch.violet .dot { background: var(--c-violet); }
-.swatch.yellow .dot { background: var(--c-yellow); }
-.swatch.blue   .dot { background: var(--c-blue); }
-.swatch.red    .dot { background: var(--c-red); }
-
-.swatch.active {
-  border-color: currentColor;
-  box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 20%, transparent);
-  background: color-mix(in srgb, currentColor 6%, white);
-}
-
-/* Problem card */
-.problem-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 28px 32px;
-  box-shadow: var(--shadow);
-  min-height: 300px;
-}
-
-.problemTitle {
-  font-size: 22px;
-  font-weight: 800;
-  margin-bottom: 18px;
-  color: var(--ink);
-  letter-spacing: -.3px;
-}
-
-/* Progress row */
-.progress-row {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 20px;
-}
-
-.bar {
-  flex: 1;
-  height: 10px;
-  background: #e2e8f0;
-  border-radius: 999px;
-  overflow: hidden;
-}
-
-.bar span {
-  display: block;
-  height: 100%;
-  width: 0;
-  background: linear-gradient(90deg, var(--c-green), var(--c-violet), var(--c-yellow), var(--c-blue), var(--c-red));
-  transition: width .4s ease;
-  border-radius: 999px;
-}
-
-.progressText { font-size: 14px; color: var(--ink-mid); font-weight: 700; white-space: nowrap; }
-
-/* Code block */
-.code-block {
-  display: block;
-  background: #0f1b2d;
-  color: #d4e0f0;
-  border-radius: var(--radius);
-  padding: 20px 24px;
-  font-family: 'Courier New', Consolas, monospace;
-  font-size: 16px;
-  line-height: 2.0;
-  overflow-x: auto;
-  white-space: pre;
-  margin-bottom: 16px;
-  letter-spacing: .2px;
-  border: 1px solid #1e3a5f;
-}
-
-.assignment {
-  font-size: 15px;
-  margin-bottom: 14px;
-  padding: 10px 16px;
-  background: #fefce8;
-  border-radius: 10px;
-  border-left: 4px solid #eab308;
-  color: #713f12;
-  font-weight: 600;
-  display: block;
-}
-
-/* AI explain */
-.ai-explain-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 12px;
-  padding: 9px 18px;
-  background: var(--brand-light);
-  border: 1.5px solid var(--brand-border);
-  border-radius: 20px;
-  cursor: pointer;
-  font-size: 14px;
-  color: var(--brand);
-  font-weight: 700;
-  transition: all 0.15s;
-  font-family: var(--font);
-}
-
-.ai-explain-btn:hover { background: #e0e7ff; box-shadow: var(--shadow); }
-.ai-explain-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-.ai-explain-panel {
-  margin-top: 12px;
-  padding: 16px 18px;
-  background: var(--ok-bg);
-  border: 1.5px solid var(--ok-border);
-  border-radius: 12px;
-  border-left: 5px solid var(--ok);
-  font-size: 16px;
-  line-height: 1.7;
-  color: var(--ok);
-}
-
-.ai-explain-panel strong {
-  display: block;
-  margin-bottom: 6px;
-  font-size: 14px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .4px;
-}
-
-/* Action buttons */
-.action-btns { display: flex; gap: 10px; flex-wrap: wrap; margin: 18px 0 14px; }
-
-.action-btn {
-  border: 1.5px solid var(--border);
-  background: var(--card);
-  border-radius: 20px;
-  padding: 9px 16px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--ink-mid);
-  transition: all 0.15s;
-  font-family: var(--font);
-}
-
-.action-btn:hover { background: var(--brand-light); border-color: var(--brand); color: var(--brand); }
-
-/* Status log */
-.log {
-  padding: 13px 18px;
-  border-radius: 12px;
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 1.5;
-  margin-bottom: 0;
-}
-
-.log.bad  { background: var(--err-bg);  border: 1.5px solid var(--err-border);  color: var(--err); }
-.log.good { background: var(--ok-bg);   border: 1.5px solid var(--ok-border);   color: var(--ok); }
-.log.info { background: var(--info-bg); border: 1.5px solid var(--info-border); color: var(--info); }
-
-/* MC question panel */
-.mc {
-  margin-top: 20px;
-  background: #fafbff;
-  border: 2px solid var(--border);
-  border-radius: var(--radius);
-  padding: 24px;
-}
-
-.mc-question {
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--ink);
-  margin-bottom: 20px;
-  line-height: 1.5;
-}
-
-.choices { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
-
-.choice {
-  padding: 13px 22px;
-  border: 2px solid var(--border);
-  border-radius: 12px;
-  background: var(--card);
-  cursor: pointer;
-  font-size: 17px;
-  font-weight: 700;
-  color: var(--ink);
-  transition: all 0.15s;
-  min-width: 80px;
-  text-align: center;
-  font-family: var(--font);
-}
-
-.choice:hover:not(.correct):not(.wrong):not([disabled]) {
-  background: var(--brand-light);
-  border-color: var(--brand);
-  color: var(--brand);
-  box-shadow: var(--shadow);
-}
-
-.choice.correct { border-color: var(--c-green); background: var(--c-green-bg); color: var(--ok); }
-.choice.wrong   { border-color: var(--c-red);   background: var(--c-red-bg);   color: var(--err); }
-.choice[disabled] { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
-
-/* Hint */
-.hint {
-  display: none;
-  margin-top: 16px;
-  padding: 16px 18px;
-  font-size: 16px;
-  background: #fffbeb;
-  border: 1.5px solid #fcd34d;
-  border-radius: 12px;
-  border-left: 5px solid #f59e0b;
-  line-height: 1.7;
-  color: #78350f;
-}
-
-.hint.show { display: block; }
-.hint strong { display: block; margin-bottom: 6px; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; }
-.hint.llm-hint { border-left-color: var(--c-violet); background: var(--c-violet-bg); color: #3b0764; }
-.hint.llm-hint strong { color: var(--c-violet); }
-
-/* =============================================
-   SESSION SUMMARY
-   ============================================= */
-.summary-section {
-  margin-top: 28px;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 32px;
-  box-shadow: var(--shadow-md);
-  animation: slideUp 0.4s ease;
-}
-
-@keyframes slideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
-
-.summary-section h2 { font-size: 24px; font-weight: 800; margin-bottom: 20px; color: var(--ink); }
-
-.totals { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 24px; }
-
-.total {
-  background: var(--bg);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius);
-  padding: 16px 20px;
-  flex: 1;
-  min-width: 130px;
-  text-align: center;
-}
-
-.total .lbl {
-  display: block;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .6px;
-  color: var(--ink-soft);
-  margin-bottom: 8px;
-}
-
-.total .val { font-size: 32px; font-weight: 800; color: var(--ink); }
-
-table { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 4px; }
-th {
-  text-align: left;
-  font-weight: 700;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: .5px;
-  padding: 10px 14px;
-  color: var(--ink-soft);
-  border-bottom: 2px solid var(--border);
-}
-td { padding: 11px 14px; border-bottom: 1px solid #f1f5f9; color: var(--ink-mid); }
-tr:last-child td { border-bottom: none; }
-tr:hover td { background: var(--brand-light); color: var(--brand-dark); }
-
-.play-again-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 24px;
-  padding: 12px 24px;
-  background: var(--brand);
-  color: #fff;
-  border: none;
-  border-radius: 20px;
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
-  font-family: var(--font);
-  transition: all 0.15s;
-}
-
-.play-again-btn:hover { background: var(--brand-dark); box-shadow: var(--shadow-md); }
-
-#loadingProblems { text-align: center; padding: 60px; color: var(--ink-soft); font-size: 17px; }
+  :root{
+    --blue:#60a5fa; --violet:#8b5cf6; --yellow:#fde047; --green:#22c55e; --red:#ef4444;
+    --paper:#fbf7ef; --paper-off:#f3f4f6; --ink:#111827; --card:#ffffff; --line:#e5e7eb;
+    --error:#dc2626; --success:#065f46; --hint:#fbbf24;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{margin:0;padding:20px;background:var(--paper);color:var(--ink);font:18px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Arial;letter-spacing:.2px;min-height:100vh;}
+  body.compact{font-size:16px;line-height:1.4;background:var(--paper-off);}
+  h1{margin:0 0 6px 0;font-size:24px;font-weight:600}
+  h2{margin:0 0 12px 0;font-size:20px;font-weight:600}
+
+  .topbar{display:flex;gap:12px;align-items:center;justify-content:space-between;max-width:1200px;margin:0 auto 16px;flex-wrap:wrap;}
+  .topbar-left{display:flex;align-items:center;gap:16px;}
+  .assist{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .toggle{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);padding:8px 12px;border-radius:12px;font-size:14px;cursor:pointer;}
+  .toggle input[type="checkbox"]{cursor:pointer}
+
+  /* User chip */
+  .user-chip{display:flex;align-items:center;gap:8px;background:#f0f9ff;border:1px solid #bae6fd;padding:6px 12px;border-radius:12px;font-size:14px;color:#0369a1;}
+  .user-chip button{background:none;border:none;cursor:pointer;color:#6b7280;font-size:12px;padding:2px 6px;border-radius:6px;}
+  .user-chip button:hover{background:#e5e7eb;}
+
+  .wrap{display:grid;grid-template-columns:260px 1fr;gap:20px;max-width:1200px;margin:auto;}
+  @media(max-width:768px){.wrap{grid-template-columns:1fr}.rail{position:static!important;display:flex;flex-direction:row;flex-wrap:wrap;margin-bottom:16px}}
+
+  .rail{position:sticky;top:12px;display:flex;flex-direction:column;gap:10px;height:fit-content;max-height:calc(100vh - 40px);overflow-y:auto;}
+  .swatch{display:flex;align-items:center;gap:10px;background:var(--card);border:2px solid var(--line);border-radius:14px;padding:12px;cursor:pointer;user-select:none;transition:all 0.2s;}
+  .swatch:hover{background:#f8fafc;transform:translateX(2px)}
+  .swatch .dot{width:20px;height:20px;border-radius:50%;flex-shrink:0}
+  .blue{color:var(--blue)}.violet{color:var(--violet)}.yellow{color:var(--yellow)}.green{color:var(--green)}.red{color:var(--red)}
+  .blue .dot{background:var(--blue)}
+  .violet .dot{background:repeating-linear-gradient(45deg,var(--violet),var(--violet) 6px,#fff 6px,#fff 10px);}
+  .yellow .dot{background:repeating-linear-gradient(90deg,var(--yellow),var(--yellow) 6px,#fff 6px,#fff 10px);}
+  .green .dot{background:radial-gradient(circle at 6px 6px,var(--green) 4px,transparent 5px),var(--green);}
+  .red .dot{background:repeating-conic-gradient(var(--red) 0deg 90deg,#fff 90deg 180deg,var(--red) 180deg 270deg,#fff 270deg 360deg);}
+  .swatch.active{outline:3px solid currentColor;outline-offset:2px;background:#f0f9ff}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,0.05);}
+  .problemHead{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:16px;flex-wrap:wrap;}
+  .problemInfo{flex:1;min-width:300px}
+  .problemTitle{font-size:20px;font-weight:600;margin-bottom:8px;color:var(--ink)}
+  .formula{font-size:24px;letter-spacing:.4px;font-family:'Courier New',monospace;margin:8px 0;padding:12px;background:#f8fafc;border-radius:8px;border:1px solid var(--line);}
+  .assignment{opacity:.85;font-size:16px;margin-top:8px;padding:8px 12px;background:#fef3c7;border-radius:6px;display:inline-block;}
+  .progressSection{min-width:280px;display:flex;flex-direction:column;gap:10px}
+  .bar{height:12px;background:#e5e7eb;border-radius:999px;overflow:hidden;min-width:260px;border:1px solid var(--line);}
+  .bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--green),var(--violet),var(--yellow),var(--blue),var(--red));transition:width .4s ease;border-radius:999px;}
+  .progressText{font-size:14px;opacity:.8;text-align:center}
+
+  .legend{font-size:15px;opacity:.9;margin:0 auto 16px;max-width:1200px;padding:12px;background:#fff;border-radius:12px;border:1px solid var(--line);}
+  .log{font-size:16px;white-space:pre-wrap;margin-top:12px;padding:12px;border-radius:8px;min-height:24px;}
+  .log.bad{color:var(--error);background:#fef2f2;border:1px solid #fecaca}
+  .log.good{color:var(--success);background:#ecfdf5;border:1px solid #a7f3d0}
+  .log.info{color:var(--ink);background:#f0f9ff;border:1px solid #bae6fd}
+  .sep{height:1px;background:var(--line);margin:16px 0}
+
+  .mc{margin-top:16px;background:#fff;border:2px solid var(--line);border-radius:14px;padding:16px;box-shadow:0 2px 4px rgba(0,0,0,0.05);}
+  .mc h3{margin:0 0 12px 0;font-size:18px;font-weight:600}
+  .choices{display:flex;flex-wrap:wrap;gap:10px}
+  .choice{padding:12px 16px;border:2px solid var(--line);border-radius:12px;background:#f3f4f6;cursor:pointer;font-size:16px;transition:all 0.2s;font-weight:500;}
+  .choice:hover:not(.correct):not(.wrong):not([disabled]){background:#e5e7eb;transform:translateY(-1px)}
+  .choice.correct{border-color:var(--green);background:#ecfdf5;color:var(--success)}
+  .choice.wrong{border-color:var(--error);background:#fef2f2;color:var(--error)}
+  .choice[disabled]{opacity:0.6;cursor:not-allowed;pointer-events:none}
+
+  .speakBtn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 12px;cursor:pointer;font-size:14px;transition:all 0.2s;}
+  .speakBtn:hover{background:#f8fafc;border-color:var(--blue)}
+  .speakBtn:active{transform:scale(.95)}
+
+  .hint{display:none;margin-top:12px;padding:12px;font-size:15px;background:#fffbeb;border:1px solid var(--hint);border-radius:8px;border-left:4px solid var(--hint);}
+  .hint.show{display:block}
+  .hint strong{display:block;margin-bottom:4px;color:#92400e;}
+  .hint.llm-hint{border-left-color:#8b5cf6;background:#faf5ff;}
+  .hint.llm-hint strong{color:#6d28d9;}
+
+  .summary{max-width:1200px;margin:20px auto 0;background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.1);}
+  .totals{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;}
+  .total{background:#f8fafc;border:1px solid var(--line);border-radius:12px;padding:12px 16px;font-size:15px;flex:1;min-width:150px;}
+  .total strong{display:block;margin-bottom:4px;opacity:.8;font-size:13px}
+  .total span{font-size:20px;font-weight:600;color:var(--blue)}
+
+  /* Mastery bar */
+  .mastery-section{margin-top:24px;}
+  .mastery-section h3{font-size:16px;font-weight:600;margin-bottom:12px;}
+  .mastery-item{display:flex;align-items:center;gap:12px;margin-bottom:8px;font-size:14px;}
+  .mastery-item .concept{min-width:110px;color:#374151;font-weight:500;}
+  .mastery-bar{flex:1;height:10px;background:#e5e7eb;border-radius:999px;overflow:hidden;}
+  .mastery-fill{height:100%;border-radius:999px;transition:width 0.8s ease;}
+  .mastery-pct{min-width:40px;text-align:right;color:#6b7280;}
+
+  table{width:100%;border-collapse:separate;border-spacing:0 8px;font-size:15px;margin-top:12px;}
+  th{text-align:left;opacity:.8;font-weight:600;padding:10px 12px;background:#f8fafc;font-size:14px;}
+  td,th{padding:10px 12px}
+  tr{background:#fbfbfb;border:1px solid var(--line)}
+  tr td:first-child,tr th:first-child{border-top-left-radius:10px;border-bottom-left-radius:10px}
+  tr td:last-child,tr th:last-child{border-top-right-radius:10px;border-bottom-right-radius:10px}
+  tr:hover{background:#f0f9ff}
+
+  .problemSelector{margin-bottom:16px;padding:12px;background:#fff;border:1px solid var(--line);border-radius:12px;}
+  .problemSelector select{padding:8px 12px;border:1px solid var(--line);border-radius:8px;font-size:15px;cursor:pointer;width:100%;max-width:400px;}
+
+  #loadingProblems{text-align:center;padding:40px;color:#6b7280;}
 </style>
 </head>
-<body class="dyslexia-mode">
-
-<!-- Dyslexia mode active banner -->
-<div class="mode-banner" id="modeBanner">
-  <span>🌟</span>
-  <strong>Dyslexia-Friendly Mode is ON</strong>
-  <span style="font-weight:400;margin-left:4px;">— Larger text, warm background, extra spacing for easier reading.</span>
-</div>
-
-<!-- Navigation -->
-<nav class="nav">
-  <div class="nav-inner">
-    <a class="nav-brand" href="#" onclick="return false;">
-      <div class="nav-brand-icon">🎯</div>
-      <span class="nav-brand-name">Trace<span>Wise</span></span>
-    </a>
-
-    <div class="nav-tabs">
-      <button class="nav-tab active" data-tab="problems" onclick="switchTab('problems')">📚 Problems</button>
-      <button class="nav-tab" data-tab="progress"  onclick="switchTab('progress')">📊 My Progress</button>
-      <button class="nav-tab" data-tab="how"       onclick="switchTab('how')">💡 How It Works</button>
-    </div>
-
-    <div class="nav-right">
-      <button class="icon-btn" id="speakLegendBtn">🔊 <span>Read</span></button>
-      <div class="dyslexia-toggle on" id="dyslexiaToggle" onclick="toggleDyslexia()">
-        <div class="toggle-switch"></div>
-        <span id="dyslexiaLabel">Dyslexia Mode</span>
-      </div>
+<body>
+  <div class="topbar">
+    <div class="topbar-left">
+      <h1>🎨 ColorPath</h1>
       <div id="userChip" class="user-chip" style="display:none;"></div>
     </div>
-  </div>
-</nav>
-
-<!-- Page content -->
-<div class="page-content">
-
-  <!-- ========== TAB: PROBLEMS ========== -->
-  <div class="tab-view active" id="tab-problems">
-
-    <div class="problem-selector-bar" id="problemSelectorWrapper">
-      <label for="problemSelect">Choose a problem:</label>
-      <select id="problemSelect" disabled>
-        <option value="">Loading problems...</option>
-      </select>
-      <span style="font-size:13px;color:var(--ink-soft);font-weight:500;">Start with ⭐ for beginners</span>
-    </div>
-
-    <div class="problems-layout">
-      <!-- Color rail -->
-      <div class="rail" id="rail">
-        <div class="rail-label">Step Color Guide</div>
-        <div class="swatch green"  data-color="GREEN"  role="button" tabindex="0" aria-label="Green: Scan the code structure">
-          <span class="dot"></span><span>🟢 Scan</span>
-        </div>
-        <div class="swatch violet" data-color="VIOLET" role="button" tabindex="0" aria-label="Violet: Read variable values">
-          <span class="dot"></span><span>🟣 Values</span>
-        </div>
-        <div class="swatch yellow" data-color="YELLOW" role="button" tabindex="0" aria-label="Yellow: Evaluate the expression">
-          <span class="dot"></span><span>🟡 Evaluate</span>
-        </div>
-        <div class="swatch blue"   data-color="BLUE"   role="button" tabindex="0" aria-label="Blue: Follow which path runs">
-          <span class="dot"></span><span>🔵 Follow</span>
-        </div>
-        <div class="swatch red"    data-color="RED"    role="button" tabindex="0" aria-label="Red: What does the code output">
-          <span class="dot"></span><span>🔴 Output</span>
-        </div>
-      </div>
-
-      <!-- Problem host -->
-      <div class="problem-card" id="problemHost">
-        <div id="loadingProblems">Please sign in to load problems...</div>
-      </div>
-    </div>
-
-    <!-- Session summary (shown after completion) -->
-    <div id="summary" class="summary-section" style="display:none;"></div>
-  </div>
-
-  <!-- ========== TAB: MY PROGRESS ========== -->
-  <div class="tab-view" id="tab-progress">
-    <div class="profile-grid">
-      <!-- Left: profile card -->
-      <div class="profile-card" id="profileCard">
-        <div class="profile-avatar">👤</div>
-        <div class="profile-name" id="profileName">—</div>
-        <div class="profile-role" id="profileRole">student</div>
-        <div class="profile-stat-row">
-          <div class="profile-stat">
-            <span class="val" id="statSessions">—</span>
-            <span class="lbl">Sessions</span>
-          </div>
-          <div class="profile-stat">
-            <span class="val" id="statConcepts">—</span>
-            <span class="lbl">Concepts</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Right: mastery -->
-      <div>
-        <div class="section-card" id="masteryCard">
-          <h3>📊 Concept Mastery</h3>
-          <div id="masteryItems"><div class="no-data">Complete a problem to see your mastery scores.</div></div>
-        </div>
-
-        <div class="section-card">
-          <h3>🎯 About Your Scores</h3>
-          <div style="font-size:15px;color:var(--ink-mid);line-height:1.7;">
-            <p>Scores are calculated using <strong>Bayesian Knowledge Tracing</strong> — a research-backed model that tracks how likely you are to truly know each concept, accounting for lucky guesses and careless errors.</p>
-            <br/>
-            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;">
-              <span class="mastery-label" style="background:#f0fdf4;color:#15803d;border:1px solid #86efac;">● Mastered ≥ 95%</span>
-              <span class="mastery-label" style="background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;">● Proficient ≥ 75%</span>
-              <span class="mastery-label" style="background:#fffbeb;color:#b45309;border:1px solid #fcd34d;">● Developing ≥ 50%</span>
-              <span class="mastery-label" style="background:#fef2f2;color:#b91c1c;border:1px solid #fca5a5;">● Novice &lt; 50%</span>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div class="assist">
+      <label class="toggle">
+        <input id="modeToggle" type="checkbox" checked />
+        <span>🧩 Dyslexia Mode</span>
+      </label>
+      <label class="toggle">
+        <input id="hintToggle" type="checkbox" />
+        <span>💡 Auto Hints</span>
+      </label>
+      <button class="speakBtn" id="speakLegend">🔊 Speak Legend</button>
     </div>
   </div>
 
-  <!-- ========== TAB: HOW IT WORKS ========== -->
-  <div class="tab-view" id="tab-how">
-    <div class="how-section">
-      <h2>How TraceWise Works</h2>
-      <p class="subtitle">A step-by-step guide to reading and understanding code — designed for everyone, especially students who find traditional text hard to process.</p>
+  <div class="legend" style="background:#e0f2fe;border-color:#0ea5e9;">
+    <strong>📖 How It Works:</strong> Solve one logic problem at a time, broken into color-coded steps.
+    For each step: (1) Click a COLOR on the left, (2) Answer the question.
+    Follow: 🟢 Green → 🟣 Violet → 🟡 Yellow → 🔵 Blue → 🔴 Red
+  </div>
 
-      <div class="how-steps">
-        <div class="how-step">
-          <div class="how-step-num">1</div>
-          <div class="how-step-text">
-            <strong>Pick a problem</strong>
-            <p>Choose a Python code snippet to trace. Start with the ⭐ beginner problem. You'll see the full code displayed clearly before you start.</p>
-          </div>
-        </div>
-        <div class="how-step">
-          <div class="how-step-num">2</div>
-          <div class="how-step-text">
-            <strong>Click "What does this code do?"</strong>
-            <p>Our AI (Claude) will explain the code in plain English — no jargon. Great to read before you start tracing.</p>
-          </div>
-        </div>
-        <div class="how-step">
-          <div class="how-step-num">3</div>
-          <div class="how-step-text">
-            <strong>Select the right color for each step</strong>
-            <p>Each step has a matching color on the left. Click the correct color to unlock the question for that step. Wrong color? It'll highlight the right one for you.</p>
-          </div>
-        </div>
-        <div class="how-step">
-          <div class="how-step-num">4</div>
-          <div class="how-step-text">
-            <strong>Answer the multiple-choice question</strong>
-            <p>Read the question about the code and pick your answer. If you get it wrong twice, a hint appears. A personalized AI hint arrives on your second wrong attempt.</p>
-          </div>
-        </div>
-        <div class="how-step">
-          <div class="how-step-num">5</div>
-          <div class="how-step-text">
-            <strong>See your results and mastery</strong>
-            <p>After finishing, you'll see a detailed breakdown and your concept mastery scores — updated after every problem you complete.</p>
-          </div>
-        </div>
-      </div>
+  <div id="problemSelectorWrapper" class="problemSelector" style="max-width:1200px;margin:0 auto 16px;">
+    <label for="problemSelect" style="display:block;margin-bottom:8px;font-weight:600;">
+      Select a Problem to Solve:
+    </label>
+    <select id="problemSelect" disabled>
+      <option value="">Loading problems...</option>
+    </select>
+    <p style="margin-top:8px;font-size:14px;opacity:0.8;">💡 Start with the easiest problem to learn how it works!</p>
+  </div>
 
-      <div class="color-legend">
-        <h3>The 5 Step Colors</h3>
-        <div class="color-row"><div class="color-dot g"></div><strong>🟢 Scan</strong><span>Look at the overall structure — is this a loop, a condition, or a print statement?</span></div>
-        <div class="color-row"><div class="color-dot v"></div><strong>🟣 Values</strong><span>Read what each variable holds — look at the right side of the = sign.</span></div>
-        <div class="color-row"><div class="color-dot y"></div><strong>🟡 Evaluate</strong><span>Work out the value of an expression — like 7 % 2 or x &gt; 3.</span></div>
-        <div class="color-row"><div class="color-dot b"></div><strong>🔵 Follow</strong><span>Decide which path the code takes — the if branch or the else branch?</span></div>
-        <div class="color-row"><div class="color-dot r"></div><strong>🔴 Output</strong><span>Determine the final output — what gets printed to the screen?</span></div>
-      </div>
+  <div class="wrap">
+    <div class="rail" id="rail">
+      <div class="swatch green"  data-color="GREEN"  role="button" tabindex="0" aria-label="Green: Group phase"><span>🟢 Group</span></div>
+      <div class="swatch violet" data-color="VIOLET" role="button" tabindex="0" aria-label="Violet: Atom phase"><span>🟣 Atom</span></div>
+      <div class="swatch yellow" data-color="YELLOW" role="button" tabindex="0" aria-label="Yellow: Simplify phase"><span>🟡 Simplify</span></div>
+      <div class="swatch blue"   data-color="BLUE"   role="button" tabindex="0" aria-label="Blue: Combine phase"><span>🔵 Combine</span></div>
+      <div class="swatch red"    data-color="RED"    role="button" tabindex="0" aria-label="Red: Final Answer phase"><span>🔴 Final Answer</span></div>
+    </div>
+    <div id="problemHost" class="card">
+      <div id="loadingProblems">Please sign in to load problems...</div>
     </div>
   </div>
 
-</div><!-- /page-content -->
+  <div id="summary" class="summary" style="display:none;"></div>
 
 <script>
 /* ===== TTS ===== */
 function speak(text){
-  try{window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.rate=0.92;u.pitch=1;u.lang='en-US';window.speechSynthesis.speak(u);}catch(e){}
+  try{window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.rate=0.95;u.pitch=1;u.lang='en-US';window.speechSynthesis.speak(u);}catch(e){}
 }
-document.getElementById('speakLegendBtn').onclick=()=>speak("Green: scan the structure. Violet: read the values. Yellow: evaluate the expression. Blue: follow the branch. Red: find the output.");
+document.getElementById('speakLegend').onclick=()=>speak("Green group. Violet atom. Yellow simplify. Blue combine. Red final answer.");
 
-/* ===== Dyslexia Mode ===== */
-let dyslexiaOn=true;
-function toggleDyslexia(){
-  dyslexiaOn=!dyslexiaOn;
-  document.body.classList.toggle('dyslexia-mode',dyslexiaOn);
-  const btn=document.getElementById('dyslexiaToggle');
-  btn.classList.toggle('on',dyslexiaOn);
-  document.getElementById('dyslexiaLabel').textContent=dyslexiaOn?'Dyslexia Mode':'Standard Mode';
-  document.getElementById('modeBanner').style.display=dyslexiaOn?'flex':'none';
-}
-
-/* ===== Tab switching ===== */
-function switchTab(name){
-  document.querySelectorAll('.tab-view').forEach(v=>v.classList.remove('active'));
-  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
-  document.getElementById('tab-'+name).classList.add('active');
-  document.querySelector(`.nav-tab[data-tab="${name}"]`).classList.add('active');
-  if(name==='progress') loadProgressTab();
-}
-
-/* ===== Fallback problem ===== */
+/* ===== Fallback problems (used if backend unavailable) ===== */
 const FALLBACK_PROBLEMS = {
-  P2:{id:"P2",title:"Print Statement Trace",formula:'name = "Alex"\nscore = 95\nprint(f"Hi {name}, your score is {score}")',assignment:"Trace what gets printed",
-    targets:[{id:"scan",label:"scan structure"},{id:"name",label:"read name"},{id:"score",label:"read score"},{id:"output",label:"output"}],
+  P2:{id:"P2",title:"Simple Conjunction",formula:"P ∧ Q",assignment:"P = T, Q = T",
+    targets:[{id:"atomP",label:"atom: P"},{id:"atomQ",label:"atom: Q"},{id:"combine",label:"combine: P ∧ Q"},{id:"finish",label:"finish"}],
     steps:[
-      {color:"GREEN",target:"scan",cue:"Scan the code structure.",question:"How many variables are assigned before the print?",choices:["1","2","3"],correct:1,explain:"Two variables: name and score are assigned on lines 1 and 2.",conceptTag:"code_scan"},
-      {color:"VIOLET",target:"name",cue:"Read the value of name.",question:"What is the value of name?",choices:["Alex","score","95"],correct:0,explain:'name = "Alex" — read the string on the right side of the equals sign.',conceptTag:"read_variable"},
-      {color:"VIOLET",target:"score",cue:"Read the value of score.",question:"What is the value of score?",choices:["95","20","0"],correct:0,explain:"score = 95 — the number on the right side of the equals sign.",conceptTag:"read_variable"},
-      {color:"RED",target:"output",cue:"What does the print produce?",question:"What gets printed?",choices:["Hi Alex, your score is 95","Hi name, your score is score","Hi {name}, your score is {score}"],correct:0,explain:"f-strings replace {name} and {score} with their actual values.",conceptTag:"output"}
+      {color:"VIOLET",target:"atomP",cue:"Evaluate P.",question:"What is P?",choices:["True","False"],correct:0,explain:"P = True.",conceptTag:"atom_eval"},
+      {color:"VIOLET",target:"atomQ",cue:"Evaluate Q.",question:"What is Q?",choices:["True","False"],correct:0,explain:"Q = True.",conceptTag:"atom_eval"},
+      {color:"BLUE",target:"combine",cue:"Combine P and Q.",question:"Evaluate P ∧ Q:",choices:["True","False"],correct:0,explain:"T ∧ T = T.",conceptTag:"conjunction"},
+      {color:"RED",target:"finish",cue:"Finished.",question:"Final answer:",choices:["True","False"],correct:0,explain:"The formula is True.",conceptTag:"finish"}
     ]
   }
 };
 
 /* ===== State ===== */
 const BLUE="BLUE",VIOLET="VIOLET",YELLOW="YELLOW",GREEN="GREEN",RED="RED";
-let currentProblem=null,currentColor=null,index=0;
-let routeMisclicks=0,mcMisclicks=0,ghostHints=0;
-let stepStats=[],stepMcMisclicks=0,wrongAnswersForHint=[];
+let currentProblem=null;
+let currentColor=null;
+let index=0;
+let idleTimer=null;
+let autoHintsEnabled=false;
+let routeMisclicks=0;
+let mcMisclicks=0;
+let ghostHints=0;
+let stepStats=[];
+let stepMcMisclicks=0; // per-step wrong answer count for LLM hint trigger
+let wrongAnswersForHint=[]; // track choices made incorrectly on current step
 let offlineMode=false;
 
 /* ===== Utilities ===== */
-function colorName(c){return{GREEN:"🟢 Scan",VIOLET:"🟣 Values",YELLOW:"🟡 Evaluate",BLUE:"🔵 Follow",RED:"🔴 Output"}[c]||c;}
+function cssColor(c){return{BLUE:"var(--blue)",VIOLET:"var(--violet)",YELLOW:"var(--yellow)",GREEN:"var(--green)",RED:"var(--red)"}[c]||"#000";}
+function colorName(c){return{GREEN:"🟢 Group",VIOLET:"🟣 Atom",YELLOW:"🟡 Simplify",BLUE:"🔵 Combine",RED:"🔴 Final Answer"}[c]||c;}
 function setLog(msg,type="info"){const el=document.getElementById("log");if(!el)return;el.className="log "+type;el.textContent=msg;}
-
-function formatCodeBlock(formula){
-  const code=formula.replace(/\\n/g,'\n');
-  const safe=code.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  return `<pre class="code-block">${safe}</pre>`;
-}
-
-function progress(){
-  const pct=Math.round(100*index/currentProblem.steps.length);
-  const p=document.getElementById("prog");
-  const pt=document.getElementById("progText");
-  if(p)p.style.width=pct+"%";
-  if(pt)pt.textContent=index===0?`0 of ${currentProblem.steps.length} steps`:`Step ${index} of ${currentProblem.steps.length}`;
-}
+function progress(){const pct=Math.round(100*index/currentProblem.steps.length);const p=document.getElementById("prog");const pt=document.getElementById("progText");if(p)p.style.width=pct+"%";if(pt)pt.textContent=`${index}/${currentProblem.steps.length} steps`;}
 
 function resetState(){
   currentColor=null;index=0;
+  clearTimeout(idleTimer);
   routeMisclicks=0;mcMisclicks=0;ghostHints=0;stepMcMisclicks=0;wrongAnswersForHint=[];
   stepStats=currentProblem.steps.map((s,i)=>({idx:i,color:s.color,targetId:s.target,routeMis:0,mcMis:0,ghosts:0}));
   document.querySelectorAll(".swatch").forEach(s=>s.classList.remove("active"));
   document.getElementById("summary").style.display="none";
 }
 
+/* ===== Idle Timer ===== */
+function startIdleTimer(){
+  clearTimeout(idleTimer);
+  if(!autoHintsEnabled)return;
+  idleTimer=setTimeout(()=>{
+    const step=currentProblem&&currentProblem.steps[index];
+    if(step){
+      const cn=colorName(step.color);
+      setLog(`Hint: Select ${cn} for the next step.`,"info");
+      speak(`Hint: Select ${cn.split(' ')[1]} color.`);
+      pulseRail(step.color);
+      ghostHints++;
+      if(stepStats[index])stepStats[index].ghosts++;
+      api.queueEvent({stepIndex:index,phase:step.color,conceptTag:step.conceptTag||'unknown',eventType:'hint_requested',choiceMade:null,correct:null});
+    }
+  },6000);
+}
+
 /* ===== Render ===== */
 async function render(){
   if(!currentProblem)return;
   resetState();
+  // Start backend session
   if(!offlineMode&&api.isLoggedIn){
     try{await api.startSession(currentProblem.id);api.markStepStart();}
     catch(err){console.warn('[App] Could not start session:',err.message);}
   }
   const host=document.getElementById("problemHost");
-  const codeHtml=formatCodeBlock(currentProblem.formula);
   host.innerHTML=`
-    <div class="problemTitle">${currentProblem.title}</div>
-    <div class="progress-row">
-      <div class="bar"><span id="prog"></span></div>
-      <div class="progressText" id="progText">0 of ${currentProblem.steps.length} steps</div>
+    <div class="problemHead">
+      <div class="problemInfo">
+        <div class="problemTitle">${currentProblem.title}</div>
+        <div class="formula" aria-label="formula">${currentProblem.formula}</div>
+        <div class="assignment">Assignment: ${currentProblem.assignment}</div>
+      </div>
+      <div class="progressSection">
+        <div class="bar"><span id="prog"></span></div>
+        <div class="progressText" id="progText">0/${currentProblem.steps.length} steps</div>
+        <button class="speakBtn" id="speakStep">🔊 Speak Step</button>
+        <button class="speakBtn" id="getHint" style="margin-top:8px">💡 Get Hint</button>
+      </div>
     </div>
-    ${codeHtml}
-    <div class="assignment">📋 Task: ${currentProblem.assignment}</div>
-    ${api.isLoggedIn?`<button class="ai-explain-btn" id="explainBtn">🤖 What does this code do?</button><div id="aiExplainPanel" style="display:none"></div>`:''}
-    <div class="action-btns">
-      <button class="action-btn" id="speakStep">🔊 Read Step Aloud</button>
-      <button class="action-btn" id="getHint">💡 Color Hint</button>
-    </div>
-    <div class="log info" id="log">👈 Click the matching color on the left to begin Step 1.</div>
-    <div id="mc" class="mc" style="display:none;"></div>
+    <div class="sep"></div>
+    <div id="mc" class="mc" style="display:none"></div>
+    <div class="log info" id="log">Pick a color from the left to start.</div>
   `;
   document.getElementById("speakStep").onclick=()=>{
-    const step=currentProblem.steps[index];speak(step?step.cue:"All steps complete!");
+    const step=currentProblem.steps[index];speak(step?step.cue:"Finished");
   };
   document.getElementById("getHint").onclick=()=>{
     const step=currentProblem.steps[index];
     if(step){
-      setLog(`Color hint: select ${colorName(step.color)} for this step.`,"info");
-      speak(`Select the ${colorName(step.color).split(' ')[1]} color.`);
+      setLog(`Hint: Select ${colorName(step.color)} for the next step.`,"info");
+      speak(`Select ${colorName(step.color).split(' ')[1]} color.`);
       pulseRail(step.color);
       ghostHints++;if(stepStats[index])stepStats[index].ghosts++;
       api.queueEvent({stepIndex:index,phase:step.color,conceptTag:step.conceptTag||'unknown',eventType:'hint_requested',choiceMade:null,correct:null});
     }
   };
-  const explainBtn=document.getElementById("explainBtn");
-  if(explainBtn){
-    explainBtn.onclick=async()=>{
-      const panel=document.getElementById("aiExplainPanel");
-      explainBtn.disabled=true;
-      explainBtn.textContent="🤖 Thinking...";
-      panel.style.display="block";
-      panel.innerHTML=`<div class="ai-explain-panel"><strong>🤖 AI Explanation</strong>Generating a plain-English explanation…</div>`;
-      const result=await api.explainCode(currentProblem.formula,currentProblem.title);
-      const label=result.source==='llm'?'🤖 AI Explanation':'📖 Overview';
-      panel.innerHTML=`<div class="ai-explain-panel"><strong>${label}</strong>${result.explanation}</div>`;
-      explainBtn.textContent="🤖 What does this code do?";
-      explainBtn.disabled=false;
-    };
-  }
-  progress();
+  startIdleTimer();progress();
 }
 
 /* ===== Interaction ===== */
 function onColorSelected(color){
+  startIdleTimer();
   const step=currentProblem&&currentProblem.steps[index];
   if(!step)return;
   if(color!==step.color){
     routeMisclicks++;
     if(stepStats[index])stepStats[index].routeMis++;
     document.getElementById("mc").style.display="none";
-    setLog(`Not this one — try ${colorName(step.color)}. It's been highlighted for you!`,"bad");
+    setLog(`That's not the right color. You need ${colorName(step.color)} for this step.`,"bad");
     pulseRail(step.color);
-    speak(`Try the ${colorName(step.color).split(' ')[1]} color.`);
+    speak(`Wrong color. You need ${colorName(step.color).split(' ')[1]}.`);
     api.queueEvent({stepIndex:index,phase:step.color,conceptTag:step.conceptTag||'unknown',eventType:'route_error',choiceMade:color,correct:false});
     return;
   }
@@ -1260,15 +297,16 @@ async function showMC(step){
   const panel=document.getElementById("mc");
   panel.style.display="block";
   panel.innerHTML=`
-    <p class="mc-question">${step.question}</p>
+    <h3>${step.question}</h3>
     <div class="choices" id="choices"></div>
-    <div class="hint" id="hint"></div>
-    <button class="action-btn" id="speakMC" style="margin-top:12px;">🔊 Read Question Aloud</button>
+    <div class="hint" id="hint">
+      <strong>💡 Hint:</strong> <span id="hintText">${step.explain}</span>
+    </div>
+    <button class="speakBtn" id="speakMC" style="margin-top:8px">🔊 Speak Question</button>
   `;
   document.getElementById('speakMC').onclick=()=>speak(step.question);
   const choicesWrap=document.getElementById("choices");
   const hintEl=document.getElementById("hint");
-
   step.choices.forEach((ch,i)=>{
     const c=document.createElement("button");
     c.className="choice";c.textContent=ch;
@@ -1276,48 +314,45 @@ async function showMC(step){
     c.addEventListener("click",async()=>{
       if(c.classList.contains("correct")||c.classList.contains("wrong"))return;
       const isCorrect=i===step.correct;
-      api.queueEvent({stepIndex:index,phase:step.color,conceptTag:step.conceptTag||'unknown',
-        eventType:isCorrect?'mc_correct':'mc_error',choiceMade:ch,correct:isCorrect});
+      api.queueEvent({
+        stepIndex:index,phase:step.color,
+        conceptTag:step.conceptTag||'unknown',
+        eventType:isCorrect?'mc_correct':'mc_error',
+        choiceMade:ch,correct:isCorrect
+      });
       if(isCorrect){
         c.classList.add("correct");
-        setLog("✅ Correct! Great work — moving to the next step.","good");
-        speak("Correct! Well done.");
         document.querySelectorAll("#choices .choice").forEach(b=>b.disabled=true);
-        setTimeout(()=>{panel.style.display="none";acceptStep();},500);
+        setTimeout(()=>{panel.style.display="none";acceptStep();},300);
       }else{
         mcMisclicks++;stepMcMisclicks++;
         if(stepStats[index])stepStats[index].mcMis++;
         c.classList.add("wrong");
         wrongAnswersForHint.push(ch);
-        if(stepMcMisclicks===1){
-          setLog("Not quite — look at the code again and try another answer.","bad");
-          speak("Not quite. Look at the code and try again.");
-        }else{
-          setLog("Here's a hint to help you.","info");
-          speak("Here is a hint.");
-          hintEl.className="hint show";
-          hintEl.innerHTML=`<strong>💡 Hint</strong>${step.explain}`;
-          if(stepMcMisclicks===2&&!offlineMode&&api.isLoggedIn){
-            hintEl.className="hint show llm-hint";
-            hintEl.innerHTML=`<strong>🤖 AI Hint</strong><span style="opacity:0.6">Getting a personalized hint for you…</span>`;
-            try{
-              const result=await api.requestHint({
-                stepIndex:index,phase:step.color,
-                question:step.question,wrongAnswers:wrongAnswersForHint,
-                conceptTag:step.conceptTag||'unknown',
-                formula:currentProblem.formula,stepExplain:step.explain
-              });
-              hintEl.className="hint show"+(result.source==='llm'?" llm-hint":"");
-              const lbl=result.source==='llm'?'🤖 AI Hint':'💡 Hint';
-              hintEl.innerHTML=`<strong>${lbl}</strong>${result.hint}`;
-              if(result.source==='llm'){
-                api.queueEvent({stepIndex:index,phase:step.color,conceptTag:step.conceptTag||'unknown',eventType:'llm_hint_shown',choiceMade:null,correct:null});
-              }
-            }catch(_){
-              hintEl.className="hint show";
-              hintEl.innerHTML=`<strong>💡 Hint</strong>${step.explain}`;
+        setLog("Try again — use the hint if you like.","bad");
+        speak(`That's not correct. ${step.explain} Try again.`);
+        // On 2nd wrong answer, fetch LLM hint
+        if(stepMcMisclicks===2&&!offlineMode&&api.isLoggedIn){
+          hintEl.classList.add("show");
+          document.getElementById("hintText").textContent="✨ Getting a personalized hint...";
+          try{
+            const result=await api.requestHint({
+              stepIndex:index,phase:step.color,
+              question:step.question,wrongAnswers:wrongAnswersForHint,
+              conceptTag:step.conceptTag||'unknown',
+              formula:currentProblem.formula,stepExplain:step.explain
+            });
+            hintEl.className="hint show"+(result.source==='llm'?" llm-hint":"");
+            const label=result.source==='llm'?'🤖 AI Hint:':'💡 Hint:';
+            document.getElementById("hint").innerHTML=`<strong>${label}</strong> <span>${result.hint}</span>`;
+            if(result.source==='llm'){
+              api.queueEvent({stepIndex:index,phase:step.color,conceptTag:step.conceptTag||'unknown',eventType:'llm_hint_shown',choiceMade:null,correct:null});
             }
+          }catch(_){
+            hintEl.classList.add("show");
           }
+        }else if(stepMcMisclicks>=1){
+          hintEl.classList.add("show");
         }
       }
     });
@@ -1338,8 +373,9 @@ function acceptStep(){
     return;
   }
   const next=currentProblem.steps[index];
-  setLog(`Step ${index} complete! 🎉  Now select ${colorName(next.color)} for Step ${index+1}.`,"good");
-  speak(`Step complete! Next: select ${colorName(next.color).split(' ')[1]}.`);
+  setLog(`Correct! Now select ${colorName(next.color)} for the next step.`,"good");
+  speak(`Correct! Next: select ${colorName(next.color).split(' ')[1]}.`);
+  startIdleTimer();
 }
 
 function pulseRail(color){
@@ -1351,102 +387,57 @@ function pulseRail(color){
 /* ===== Summary ===== */
 async function showSummary(){
   const stats={routeErrors:routeMisclicks,mcErrors:mcMisclicks,hintsUsed:ghostHints,totalSteps:currentProblem.steps.length};
-  if(!offlineMode&&api.isLoggedIn) api.completeSession(stats).catch(()=>{});
-
+  // Complete backend session
+  if(!offlineMode&&api.isLoggedIn){
+    api.completeSession(stats).catch(()=>{});
+  }
   const summary=document.getElementById('summary');
   const rows=stepStats.map(s=>{
     const step=currentProblem.steps[s.idx];
-    const q=step?step.question.substring(0,44)+(step.question.length>44?'…':""):"";
+    const q=step?step.question.substring(0,40)+(step.question.length>40?'...':""):"";
     return `<tr><td>#${s.idx+1}</td><td>${colorName(s.color)}</td><td>${q}</td><td>${s.routeMis}</td><td>${s.mcMis}</td><td>${s.ghosts}</td></tr>`;
   }).join('');
-  const score=Math.max(0,100-routeMisclicks*5-mcMisclicks*10-ghostHints*3);
   summary.innerHTML=`
     <h2>Session Complete 🎉</h2>
     <div class="totals">
-      <div class="total"><span class="lbl">Score</span><span class="val">${score}</span></div>
-      <div class="total"><span class="lbl">Steps Done</span><span class="val">${currentProblem.steps.length}</span></div>
-      <div class="total"><span class="lbl">Color Errors</span><span class="val">${routeMisclicks}</span></div>
-      <div class="total"><span class="lbl">Answer Errors</span><span class="val">${mcMisclicks}</span></div>
+      <div class="total"><strong>Color Errors</strong><span>${routeMisclicks}</span></div>
+      <div class="total"><strong>Answer Errors</strong><span>${mcMisclicks}</span></div>
+      <div class="total"><strong>Hints Used</strong><span>${ghostHints}</span></div>
+      <div class="total"><strong>Total Steps</strong><span>${currentProblem.steps.length}</span></div>
     </div>
-    <table>
-      <thead><tr><th>Step</th><th>Phase</th><th>Question</th><th>Color Err</th><th>Ans Err</th><th>Hints</th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table>
-    <div id="masteryDisplay" style="display:none;margin-top:24px;">
-      <h3 style="font-size:17px;font-weight:700;margin-bottom:14px;">📊 Updated Concept Mastery</h3>
-      <div id="summaryMasteryItems"></div>
+    <table><thead><tr><th>Step</th><th>Phase</th><th>Question</th><th>Color Err</th><th>Ans Err</th><th>Hints</th></tr></thead>
+    <tbody>${rows}</tbody></table>
+    <div id="masteryDisplay" class="mastery-section" style="display:none;">
+      <h3>📊 Your Concept Mastery</h3>
+      <div id="masteryItems"></div>
     </div>
-    <button class="play-again-btn" onclick="reloadCurrentProblem()">▶ Try Again</button>
   `;
   summary.style.display='block';
-  setLog("Finished! See your results below.","good");
-  summary.scrollIntoView({behavior:'smooth',block:'start'});
+  setLog("Finished! See summary below.","good");
 
+  // Fetch and display mastery
   if(!offlineMode&&api.isLoggedIn){
     try{
       const mastery=await api.getMyMastery();
       if(mastery&&mastery.length>0){
-        renderMasteryItems(mastery,'summaryMasteryItems');
+        const masteryHtml=mastery.map(m=>{
+          const pct=m.masteryPct||Math.round(m.p_know*100);
+          const color=pct>=95?'#22c55e':pct>=75?'#60a5fa':pct>=50?'#fbbf24':'#ef4444';
+          return `<div class="mastery-item">
+            <span class="concept">${m.concept_tag}</span>
+            <div class="mastery-bar"><div class="mastery-fill" style="width:${pct}%;background:${color};"></div></div>
+            <span class="mastery-pct">${pct}%</span>
+            <span style="font-size:12px;color:#6b7280;">${m.masteryLabel||''}</span>
+          </div>`;
+        }).join('');
+        document.getElementById('masteryItems').innerHTML=masteryHtml;
         document.getElementById('masteryDisplay').style.display='block';
       }
     }catch(_){}
   }
 }
 
-function reloadCurrentProblem(){
-  if(currentProblem) loadAndRenderProblem(currentProblem.id);
-}
-
-/* ===== Progress Tab ===== */
-async function loadProgressTab(){
-  if(!api.isLoggedIn){
-    document.getElementById('masteryItems').innerHTML='<div class="no-data">Please sign in to view your progress.</div>';
-    return;
-  }
-  if(api.user){
-    document.getElementById('profileName').textContent=api.user.username;
-    document.getElementById('profileRole').textContent=api.user.role;
-    document.getElementById('profileAvatar')?document.getElementById('profileAvatar').textContent='👤':null;
-  }
-  try{
-    const mastery=await api.getMyMastery();
-    if(mastery&&mastery.length>0){
-      renderMasteryItems(mastery,'masteryItems');
-      document.getElementById('statConcepts').textContent=mastery.length;
-    }else{
-      document.getElementById('masteryItems').innerHTML='<div class="no-data">Complete a problem to see your mastery scores here.</div>';
-      document.getElementById('statConcepts').textContent='0';
-    }
-  }catch(_){
-    document.getElementById('masteryItems').innerHTML='<div class="no-data">Could not load mastery data.</div>';
-  }
-  try{
-    const sessions=await api.getSessions();
-    document.getElementById('statSessions').textContent=Array.isArray(sessions)?sessions.length:'—';
-  }catch(_){ document.getElementById('statSessions').textContent='—'; }
-}
-
-function renderMasteryItems(mastery,containerId){
-  const container=document.getElementById(containerId);
-  if(!container)return;
-  const html=mastery.map(m=>{
-    const pct=m.masteryPct||Math.round((m.p_know||0)*100);
-    const color=pct>=95?'#16a34a':pct>=75?'#2563eb':pct>=50?'#b45309':'#b91c1c';
-    const label=pct>=95?'Mastered':pct>=75?'Proficient':pct>=50?'Developing':'Novice';
-    const labelBg=pct>=95?'#f0fdf4':pct>=75?'#eff6ff':pct>=50?'#fffbeb':'#fef2f2';
-    const labelColor=pct>=95?'#15803d':pct>=75?'#1d4ed8':pct>=50?'#b45309':'#b91c1c';
-    const labelBorder=pct>=95?'#86efac':pct>=75?'#bfdbfe':pct>=50?'#fcd34d':'#fca5a5';
-    return `<div class="mastery-item">
-      <span class="concept">${m.concept_tag.replace(/_/g,' ')}</span>
-      <div class="mastery-bar"><div class="mastery-fill" style="width:${pct}%;background:${color};"></div></div>
-      <span class="mastery-pct">${pct}%</span>
-      <span class="mastery-label" style="background:${labelBg};color:${labelColor};border:1px solid ${labelBorder};">${label}</span>
-    </div>`;
-  }).join('');
-  container.innerHTML=html;
-}
-
-/* ===== Color Rail events ===== */
+/* ===== Color Rail ===== */
 document.querySelectorAll(".swatch").forEach(s=>{
   s.addEventListener("click",()=>{
     if(!currentProblem)return;
@@ -1466,20 +457,24 @@ document.getElementById("problemSelect").addEventListener("change",(e)=>{
 
 async function loadAndRenderProblem(problemId){
   const host=document.getElementById("problemHost");
-  host.innerHTML='<div id="loadingProblems" style="text-align:center;padding:48px;color:var(--ink-soft);">Loading problem…</div>';
+  host.innerHTML='<div id="loadingProblems">Loading problem...</div>';
   try{
     const problem=await api.getProblem(problemId);
-    currentProblem={id:problem.id,title:problem.title,formula:problem.formula,
-      assignment:problem.assignment,steps:problem.steps,targets:problem.targets};
+    currentProblem={
+      id:problem.id,title:problem.title,formula:problem.formula,
+      assignment:problem.assignment,
+      steps:problem.steps,targets:problem.targets
+    };
     await render();
   }catch(err){
-    console.warn('[App] Fallback mode:',err.message);
+    console.warn('[App] Failed to load from API, using fallback:',err.message);
     offlineMode=true;
     currentProblem=FALLBACK_PROBLEMS[problemId]||Object.values(FALLBACK_PROBLEMS)[0];
     await render();
   }
 }
 
+/* ===== Populate Problem Selector ===== */
 async function loadProblemList(){
   const sel=document.getElementById('problemSelect');
   try{
@@ -1487,30 +482,30 @@ async function loadProblemList(){
     sel.innerHTML='';
     problems.forEach(p=>{
       const opt=document.createElement('option');
-      const stars='★'.repeat(p.difficulty||1)+'☆'.repeat(5-(p.difficulty||1));
       opt.value=p.id;
-      opt.textContent=`${p.title}  ${stars}  (${p.step_count} steps)`;
-      if(p.id==='P2') opt.textContent+='  ⭐ Start here!';
+      opt.textContent=`${p.title} — Difficulty: ${p.difficulty}/5 (${p.step_count} steps)`;
+      if(p.id==='P2')opt.textContent+=' ⭐ Start here!';
       sel.appendChild(opt);
     });
     sel.disabled=false;
+    // Auto-load easiest problem
     const defaultId=problems.find(p=>p.id==='P2')?'P2':problems[0]?.id;
     if(defaultId){sel.value=defaultId;loadAndRenderProblem(defaultId);}
   }catch(err){
-    console.warn('[App] Offline mode');
+    console.warn('[App] Cannot reach backend, entering offline mode');
     offlineMode=true;
-    sel.innerHTML='<option value="P2">Print Statement Trace — ⭐ Offline Mode</option>';
+    sel.innerHTML='<option value="P2">Problem 2: Simple Conjunction (P = T, Q = T) — Offline Mode</option>';
     sel.disabled=false;
     currentProblem=FALLBACK_PROBLEMS.P2;
     await render();
   }
 }
 
-/* ===== User chip ===== */
+/* ===== User Chip ===== */
 function updateUserChip(){
   const chip=document.getElementById('userChip');
   if(api.isLoggedIn&&api.user){
-    chip.innerHTML=`👤 <strong>${api.user.username}</strong> <button onclick="handleLogout()">Sign out</button>`;
+    chip.innerHTML=`👤 <strong>${api.user.username}</strong> (${api.user.role}) <button onclick="handleLogout()">Sign out</button>`;
     chip.style.display='flex';
   }else{
     chip.style.display='none';
@@ -1520,20 +515,27 @@ function updateUserChip(){
 async function handleLogout(){
   await api.logout();
   updateUserChip();
-  document.getElementById('problemHost').innerHTML='<div id="loadingProblems" style="text-align:center;padding:48px;color:var(--ink-soft);">Please sign in to continue.</div>';
+  document.getElementById('problemHost').innerHTML='<div id="loadingProblems">Please sign in to continue.</div>';
   AuthModal.show();
 }
 
-/* ===== Boot ===== */
+/* ===== Toggles ===== */
+document.getElementById('modeToggle').onchange=(e)=>{
+  document.body.classList.toggle('compact',!e.target.checked);
+};
+document.getElementById('hintToggle').onchange=(e)=>{
+  autoHintsEnabled=e.target.checked;
+  if(!autoHintsEnabled)clearTimeout(idleTimer);
+  else startIdleTimer();
+};
+
+/* ===== Boot on login ===== */
 window.addEventListener('cp:logged-in',async()=>{
-  // Teachers and admins belong on the dashboard, not the student app
-  if(api.user && (api.user.role === 'teacher' || api.user.role === 'admin')){
-    window.location.href = '/dashboard';
-    return;
-  }
   updateUserChip();
   await loadProblemList();
 });
+
+// If already logged in when page loads, auth-modal.js fires cp:logged-in
 </script>
 </body>
 </html>

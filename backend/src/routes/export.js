@@ -52,7 +52,7 @@ router.get('/events.csv', requireAuth, requireRole('admin'), async (req, res, ne
     ].join('\n');
 
     res.setHeader('Content-Type', 'text/csv');
-    res.setHeader('Content-Disposition', `attachment; filename="tracewise_events_${Date.now()}.csv"`);
+    res.setHeader('Content-Disposition', `attachment; filename="colorpath_events_${Date.now()}.csv"`);
     res.send(csv);
   } catch (err) {
     next(err);
@@ -63,7 +63,7 @@ router.get('/events.csv', requireAuth, requireRole('admin'), async (req, res, ne
 router.get('/events.json', requireAuth, requireRole('admin'), async (req, res, next) => {
   try {
     const events = await fetchEvents(req);
-    res.setHeader('Content-Disposition', `attachment; filename="tracewise_events_${Date.now()}.json"`);
+    res.setHeader('Content-Disposition', `attachment; filename="colorpath_events_${Date.now()}.json"`);
     res.json({ exported_at: new Date().toISOString(), count: events.length, events });
   } catch (err) {
     next(err);

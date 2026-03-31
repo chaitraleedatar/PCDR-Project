@@ -1,6 +1,6 @@
-# TraceWise — Adaptive Code Learning Platform
+# ColorPath v2 — Adaptive Logic Learning Platform
 
-An end-to-end full-stack platform teaching code tracing to dyslexic CS students via color-coded step workflows, Bayesian Knowledge Tracing, and AI-generated personalized hints.
+An end-to-end full-stack platform teaching propositional logic to dyslexic students via color-coded step workflows, Bayesian Knowledge Tracing, and AI-generated personalized hints.
 
 ---
 
@@ -23,9 +23,9 @@ docker-compose up --build
 **Demo accounts** (password: `password`):
 | Role    | Email                      |
 |---------|----------------------------|
-| Student | student@tracewise.edu      |
-| Teacher | teacher@tracewise.edu      |
-| Admin   | admin@tracewise.edu        |
+| Student | student@colorpath.edu      |
+| Teacher | teacher@colorpath.edu      |
+| Admin   | admin@colorpath.edu        |
 
 ---
 
@@ -36,8 +36,8 @@ Requires: Node.js 20+, PostgreSQL 16, Redis 7
 ```bash
 cd backend
 npm install
-psql -d tracewise -f db/schema.sql
-psql -d tracewise -f db/seed.sql
+psql -d colorpath -f db/schema.sql
+psql -d colorpath -f db/seed.sql
 npm run dev   # serves frontend/ as static files on :3000
 ```
 
@@ -126,7 +126,7 @@ Export anonymized step-level data for analysis:
 ```bash
 curl -H "Authorization: Bearer <admin_token>" \
   "http://localhost:3000/api/export/events.csv?since=2024-01-01" \
-  -o tracewise_data.csv
+  -o colorpath_data.csv
 ```
 
 The anonymizer uses HMAC-SHA256 with a server-side secret — user IDs cannot be de-anonymized by guessing.
